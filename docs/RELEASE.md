@@ -15,3 +15,6 @@ Typecheck, four meaningful threshold/proof-draft tests and production build run.
 Native Chrome desktop/mobile verification is blocked: Mac is locked and automatic unlock failed. No browser screenshots or Lighthouse results are claimed. Responsive CSS, focus styles, native modal semantics and reduced-motion rules are implemented, but require interactive review before launch.
 
 Current scope: frontend preview. No mint, account login, backend, real submissions, funding, reward transfers or fees enabled. No financial configuration copied from other projects.
+
+## Repository / hosted preview
+Application revision: `70383ce`. Private GitHub repo: https://github.com/jaycarson373-tech/missions-fun. Default branch: main. Hosted frontend: https://missions-fun.vercel.app. Both application builds passed. No financial execution enabled. Brand exports were visually inspected; native browser review remains blocked by the locked Mac.
