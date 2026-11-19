@@ -14,4 +14,4 @@ Run: `npm ci`, `npm run dev`. Check: `npm test`, `npm run build`.
 
 One step: Vercel → this project → **Storage** → **Create Database** → **Upstash for Redis** (free) → **Connect** to this project, then redeploy. That sets `KV_REST_API_URL` and `KV_REST_API_TOKEN`; submissions open automatically.
 
-Review at `/admin`. The password is the `KV_REST_API_TOKEN` value (Vercel → Storage → the database → `.env.local` tab). Optionally set a separate `ADMIN_TOKEN` (16+ characters) to use instead. Set each entry to Pending review / Approved / Rejected / Paid, add a public note, and paste the payout transaction signature when marking Paid.
+Review at `/admin` with the owner's admin password (only its SHA-256 hash is in the code). An `ADMIN_TOKEN` env var also works if you set one. Set each entry to Pending review / Approved / Rejected / Paid, add a public note, and paste the payout transaction signature when marking Paid.
