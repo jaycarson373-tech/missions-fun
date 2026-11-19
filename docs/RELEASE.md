@@ -18,3 +18,9 @@ Current scope: frontend preview. No mint, account login, backend, real submissio
 
 ## Repository / hosted preview
 Application revision: `70383ce`. Private GitHub repo: https://github.com/jaycarson373-tech/missions-fun. Default branch: main. Hosted frontend: https://missions-fun.vercel.app. Both application builds passed. No financial execution enabled. Brand exports were visually inspected; native browser review remains blocked by the locked Mac.
+
+## BOUNTY rebrand — November 18, 2026
+
+Focused reuse of the existing frontend: new B mark/favicon/social card, player-created gameplay challenge catalog, AI-assisted clip-review copy and creator draft form with local recovery/download. Existing 2.55M threshold and proof safeguards retained. No new libraries or paid media generation. Updated backend handoff describes bounded AI review, uncertain-result escalation and non-wagered funding.
+
+Verification: four existing tests pass; production build/typecheck pass. Desktop browser checked; creator draft survived reload and exported with explicit unpublished status. No browser console errors observed. Remote publishing, AI review and rewards remain inactive.

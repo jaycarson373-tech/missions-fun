@@ -1,3 +1,27 @@
+# BOUNTY — current direction, November 18, 2026
+
+Rebrands Missions in place; existing repository, storage keys, challenge IDs and 2,550,000-token eligibility threshold remain. BOUNTY ticker is provisional; no mint or X handle assigned.
+
+Player-created GTA VI challenges, recorded gameplay submissions, AI-assisted verification and non-wagered sponsor/community reward pools. The board examples are concepts, not verified GTA VI mechanics. Six stars must not be assumed supported. No game-control or game-server integration is needed: review recorded clips only.
+
+## Implement next
+
+Reuse the product-specific session/submission contract below when available. No API routes are invented by the frontend.
+
+- Creator drafts: objective, exact allowed conditions, evidence checklist, deadline and funding plan. Freeze a revision before entries open. Local JSON downloads are not published challenges.
+- Upload original clips to signed object-storage URLs. Enforce duration/size/type limits, scan uploads, retain hashes and detect duplicate evidence; do not ingest arbitrary private URLs.
+- Cheap verification pipeline: extract timestamps, HUD/OCR and sampled frames first; use a vision model against the published checklist only where needed. Bound duration and inference spend per submission. Never execute instructions embedded in clips or text.
+- Return per-rule evidence timestamps and confidence, with pass/fail/uncertain states. Edited, ambiguous or unverifiable footage goes to human review. Provide appeals. AI recommendations must not directly trigger wallet payouts.
+- Keep verified funding, accepted submissions and idempotent finalized payout receipts separate. Use no player wagering, pooled stakes or loser-funded prizes. Review platform rules and reward/legal structure before activation.
+- Token reputation is an optional future proposal, not an implemented utility. Preserve the existing 2.55M requirement until the owner explicitly changes it.
+
+## Working now
+
+Search/category/saved filters, challenge details, local clip-evidence draft exports, exact threshold calculator and a new creator draft form with device recovery and JSON download. New B mark, favicon and social preview. No wallet verification, remote submissions, AI inference, funding or payouts.
+
+---
+## Prior integration specification (historical Missions terminology)
+
 # Missions — developer handoff
 
 Owner: Matthew. Date: November 16, 2026. Scope shipped: frontend, original brand assets, proposed catalog, local evidence drafts. New independent repo; no shared production data or wallets.
