@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  calculateEligibility, makeProofDraft, parseTokenAmount, briefChecks, briefIdFromHash, briefLink, xIntent,
+  calculateEligibility, parseTokenAmount, briefChecks, briefIdFromHash, briefLink, xIntent,
   missions, liveBounties, queuedBounties, isWalletAddress,
 } from '../lib/missions.ts';
+import {parseTweetUrl, shortWallet, validateReview, validateSubmission} from '../lib/submissions.ts';
 
 const WALLET = 'So11111111111111111111111111111111111111112';
 const NOTES = 'An original clip with the wanted level and timer visible start to finish.';
@@ -20,25 +21,26 @@ test('unsafe/ambiguous amounts rejected', () => {
   for (const v of ['-1', '2.5e6', 'NaN', 'Infinity', '2,500,000', '0.0000001', '']) assert.throws(() => parseTokenAmount(v));
 });
 
-test('proof export cannot become a payout or submission', () => {
-  const d = makeProofDraft('001', 'https://example.com/evidence', NOTES, WALLET);
-  assert.equal(d.submitted, false);
-  assert.equal(d.eligibilityVerified, false);
-  assert.equal(d.tokenMint, null);
-  assert.equal(d.payment, null);
-  assert.equal(d.wallet, WALLET);
-  assert.equal(d.requiredTokens, '2500000');
+test('submissions need a live bounty, a real wallet and a tweet link', () => {
+  const v = validateSubmission({bountyId: '001', wallet: ` ${WALLET} `, tweetUrl: 'https://twitter.com/Player_1/status/1234567890?s=20', note: ' first try '});
+  assert.deepEqual(v, {bountyId: '001', wallet: WALLET, tweetUrl: 'https://x.com/Player_1/status/1234567890', handle: 'Player_1', note: 'first try'});
+  assert.ok(validateSubmission({bountyId: '002', wallet: WALLET, tweetUrl: 'https://x.com/a/status/99999'}));
+  assert.throws(() => validateSubmission({bountyId: '003', wallet: WALLET, tweetUrl: 'https://x.com/a/status/99999'}), /not live/);
+  for (const w of ['', '0xabc', 'not a wallet', 'O0Il'.repeat(10)]) assert.throws(() => validateSubmission({bountyId: '001', wallet: w, tweetUrl: 'https://x.com/a/status/99999'}));
+  for (const u of ['http://x.com/a/status/99999', 'https://youtube.com/watch?v=1', 'https://x.com/a', 'https://x.com.evil.io/a/status/99999', 'javascript:alert(1)'])
+    assert.throws(() => validateSubmission({bountyId: '001', wallet: WALLET, tweetUrl: u}), /tweet/);
+  assert.throws(() => validateSubmission({bountyId: '001', wallet: WALLET, tweetUrl: 'https://x.com/a/status/99999', note: 'x'.repeat(281)}));
+  assert.equal(parseTweetUrl('https://mobile.twitter.com/b/status/123456')?.url, 'https://x.com/b/status/123456');
 });
 
-test('proof validation rejects queued bounties, bad wallets, credentials and executable links', () => {
-  for (const link of ['javascript:alert(1)', 'http://example.com', 'https://user:pass@example.com'])
-    assert.throws(() => makeProofDraft('001', link, NOTES, WALLET));
-  assert.throws(() => makeProofDraft('999', 'https://example.com', NOTES, WALLET));
-  assert.throws(() => makeProofDraft('003', 'https://example.com', NOTES, WALLET), /not live/);
-  assert.ok(makeProofDraft('002', 'https://example.com/clip', NOTES, WALLET));
-  assert.throws(() => makeProofDraft('001', 'https://example.com', 'short', WALLET));
-  for (const w of ['', '0xabc', 'not a wallet', 'O0Il'.repeat(10)]) assert.throws(() => makeProofDraft('001', 'https://example.com', NOTES, w));
-  assert.ok(isWalletAddress(` ${WALLET} `));
+test('reviews: paid needs a payout tx, statuses are fixed', () => {
+  const tx = '5'.repeat(88);
+  assert.deepEqual(validateReview({status: 'paid', payoutTx: tx, reviewNote: 'clean run'}), {status: 'paid', reviewNote: 'clean run', payoutTx: tx});
+  assert.throws(() => validateReview({status: 'paid'}), /payout/);
+  assert.throws(() => validateReview({status: 'winner'}));
+  assert.throws(() => validateReview({status: 'paid', payoutTx: 'not-a-tx'}));
+  assert.equal(validateReview({status: 'rejected', payoutTx: tx}).payoutTx, null);
+  assert.equal(shortWallet(WALLET), 'So11…1112');
 });
 
 test('two bounties are live with their rewards', () => {

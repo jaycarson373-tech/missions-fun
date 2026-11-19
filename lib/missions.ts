@@ -44,21 +44,6 @@ export function calculateEligibility(amount: string) {
 const BASE58_WALLET = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 export function isWalletAddress(v: string) { return BASE58_WALLET.test(v.trim()); }
 
-// A local, unsigned draft. It is never submitted, never checks balances and never moves funds.
-export function makeProofDraft(missionId: string, url: string, notes: string, wallet: string) {
-  if (!liveBounties.some(m => m.id === missionId)) throw new Error('That bounty is not live.');
-  if (!isWalletAddress(wallet)) throw new Error('Add the Solana wallet address you hold $BOUNTY in.');
-  let parsed: URL;
-  try { parsed = new URL(url); } catch { throw new Error('Add a valid HTTPS clip link.'); }
-  if (parsed.protocol !== 'https:' || parsed.username || parsed.password) throw new Error('Use a public HTTPS clip link without credentials.');
-  if (url.length > 2000) throw new Error('Clip link is too long.');
-  if (notes.trim().length < 20 || notes.length > 2000) throw new Error('Add between 20 and 2,000 characters describing your clip.');
-  return {
-    schemaVersion: 2, project: 'BOUNTY', missionId, wallet: wallet.trim(), evidenceUrl: parsed.href, notes: notes.trim(),
-    status: 'local-draft', eligibilityVerified: false, requiredTokens: REQUIRED_TOKENS.toString(), tokenMint: null, submitted: false, payment: null,
-  };
-}
-
 export type BriefDraft = {title: string; objective: string; evidence: string; rewardNotes: string};
 // Local writing aid only: it scores how measurable a pitch reads, never approves, publishes or funds it.
 export function briefChecks(d: BriefDraft) {

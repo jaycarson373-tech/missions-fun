@@ -1,11 +1,13 @@
 'use client';
 import {useEffect, useRef, useState} from 'react';
 import {
-  liveBounties, calculateEligibility, makeProofDraft, briefLink, briefIdFromHash,
+  liveBounties, calculateEligibility, briefLink, briefIdFromHash,
   shareText, xIntent, type Mission,
 } from '@/lib/missions';
 import {Icon, Scene, Star} from './art';
 import {Stars} from './poster';
+import SubmissionsBoard from './submissions-board';
+import {tweetTemplate, validateSubmission, type Submission} from '@/lib/submissions';
 
 type Modal = {type: 'submit'; mission: Mission} | {type: 'eligibility'} | null;
 const live = liveBounties[0];
@@ -13,14 +15,14 @@ const live = liveBounties[0];
 const steps = [
   {icon: 'wallet', t: 'Hold 2.5M+', b: 'Keep at least 2,500,000 $BOUNTY in your Solana wallet.'},
   {icon: 'clip', t: 'Clip it', b: 'Do the bounty in GTA VI. One continuous clip, no cuts.'},
-  {icon: 'coin', t: 'Get paid', b: 'Submit the clip with your wallet. Pass and the reward is paid from the bounty pool.'},
+  {icon: 'coin', t: 'Tweet it & submit', b: 'Tweet the clip, then submit the tweet link with your wallet. Every entry is reviewed by hand, and the first one that passes gets paid.'},
 ];
 
 const faq = [
   ['Where does the reward come from?', 'Trading fees fill the bounty pool, and rewards are paid from it. The amount is shown in SOL and paid out in TTWO, since $BOUNTY is paired with it. No team supply. Subject to platform rules and legal review; payouts are not live yet.'],
   ['When is the next bounty?', 'When the pool fills. Next bounties stay secret until they drop, so nobody gets a head start.'],
   ['Can more than one person win?', 'No. Each bounty pays the first clip that passes review. After that it closes.'],
-  ['How are clips checked?', 'Against the bounty’s written rules, with AI helping and a person making the call. Your wallet must hold 2,500,000+ $BOUNTY.'],
+  ['How are clips checked?', 'By hand. We watch every clip against the bounty’s rules and check that the wallet holds 2,500,000+ $BOUNTY. Every status and payout shows on the public submissions board.'],
   ['Is this made by Rockstar?', 'No. BOUNTY is an independent community project with original artwork, not affiliated with Rockstar Games or Take-Two.'],
 ];
 
@@ -93,10 +95,12 @@ export default function Missions() {
   const [notice, setNotice] = useState('');
   const [amount, setAmount] = useState('');
   const [estimate, setEstimate] = useState('');
-  const [evidence, setEvidence] = useState('');
+  const [tweet, setTweet] = useState('');
   const [wallet, setWallet] = useState('');
-  const [notes, setNotes] = useState('');
+  const [note, setNote] = useState('');
   const [formError, setFormError] = useState('');
+  const [sending, setSending] = useState(false);
+  const [done, setDone] = useState<Submission | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLElement | null>(null);
 
@@ -104,7 +108,7 @@ export default function Missions() {
     if (modal) {
       opener.current = document.activeElement as HTMLElement;
       if (!dialog.current?.open) dialog.current?.showModal();
-      setFormError(''); setEstimate(''); setAmount('');
+      setFormError(''); setEstimate(''); setAmount(''); setDone(null);
     } else if (dialog.current?.open) {
       dialog.current.close();
       opener.current?.focus();
@@ -145,12 +149,19 @@ export default function Missions() {
     catch { setNotice(url); }
   }
 
-  function exportProof(m: Mission) {
+  async function submitEntry(m: Mission) {
+    setFormError('');
+    try { validateSubmission({bountyId: m.id, wallet, tweetUrl: tweet, note}); }
+    catch (e) { setFormError((e as Error).message); return; }
+    setSending(true);
     try {
-      const draft = makeProofDraft(m.id, evidence, notes, wallet);
-      try { localStorage.setItem(`bounty:submission:${m.id}`, JSON.stringify(draft)); } catch {}
-      setFormError(''); setNotice('Saved on this device. Submissions open at launch.'); setModal(null);
-    } catch (e) { setFormError(e instanceof Error ? e.message : 'Please check your submission.'); }
+      const r = await fetch('/api/submissions', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({bountyId: m.id, wallet, tweetUrl: tweet, note})});
+      const j = await r.json() as {submission?: Submission; error?: string};
+      if (!r.ok || !j.submission) { setFormError(j.error || 'Could not submit right now.'); return; }
+      setDone(j.submission); setTweet(''); setNote('');
+      dispatchEvent(new Event('bounty:submitted'));
+    } catch { setFormError('Could not reach the server. Try again.'); }
+    finally { setSending(false); }
   }
 
   function checkAmount() {
@@ -171,7 +182,7 @@ export default function Missions() {
 
       <header className="top">
         <a href="#" className="brand" aria-label="Bounty home"><img src="/logo.jpg" width="40" height="40" alt=""/><span>Bounty</span></a>
-        <nav aria-label="Main navigation"><a href="#bounty">Bounties</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+        <nav aria-label="Main navigation"><a href="#bounty">Bounties</a><a href="#submissions">Submissions</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
         <button className="btn btn-pink btn-sm" onClick={() => openSubmit()}>Submit a clip</button>
       </header>
 
@@ -226,6 +237,8 @@ export default function Missions() {
           ))}
         </section>
 
+        <SubmissionsBoard/>
+
         <section className="how" id="how">
           <h2 className="h2">How it works</h2>
           <ol className="steps">
@@ -265,17 +278,36 @@ export default function Missions() {
         <button className="modal-close" aria-label="Close dialog" onClick={() => setModal(null)}><Icon type="close"/></button>
         {modal?.type === 'submit' ? (
           <div className="modal-body">
-            <p className="label">Bounty #{modal.mission.id} · submit a clip</p>
+            <p className="label">Bounty #{modal.mission.id} · {modal.mission.reward}</p>
             <h2 id="modal-title">{modal.mission.title}</h2>
-            <p className="note">Reward: {modal.mission.reward}. First clip that passes review wins.</p>
-            <form onSubmit={e => { e.preventDefault(); exportProof(modal.mission); }}>
-              <label>Your Solana wallet<input value={wallet} onChange={e => setWallet(e.target.value)} required maxLength={60} placeholder="Wallet holding 2,500,000+ $BOUNTY" autoComplete="off" spellCheck={false}/></label>
-              <label>Clip link<input type="url" placeholder="https://…" required value={evidence} onChange={e => setEvidence(e.target.value)} maxLength={2000}/></label>
-              <label>What does it show?<textarea rows={3} required minLength={20} maxLength={2000} value={notes} onChange={e => setNotes(e.target.value)} placeholder="When the timer starts and ends, anything a reviewer should look for…"/></label>
-              {formError && <p className="error" role="alert">{formError}</p>}
-              <button type="submit" className="btn btn-pink">Save for launch</button>
-              <p className="note">Submissions open at launch. Until then your entry is saved on this device only. Nothing is sent or checked yet.</p>
-            </form>
+            {done ? (
+              <div className="sent">
+                <span className="sent-ico"><Icon type="check" size={26}/></span>
+                <h3>Submitted</h3>
+                <p>Your entry is on the public board as <b>Pending review</b>. We check every clip by hand, plus your wallet’s 2.5M+ balance.</p>
+                <a className="btn btn-pink" href="#submissions" onClick={() => setModal(null)}>See it on the board</a>
+              </div>
+            ) : (
+              <form onSubmit={e => { e.preventDefault(); submitEntry(modal.mission); }}>
+                <ol className="submit-steps">
+                  <li>
+                    <b>1. Tweet your clip</b>
+                    <span>Post the full uncut clip on X and tag $BOUNTY.</span>
+                    <a className="chip" target="_blank" rel="noopener noreferrer"
+                      href={`https://x.com/intent/post?text=${encodeURIComponent(tweetTemplate(modal.mission.title, modal.mission.id, typeof location === 'undefined' ? '' : location.origin))}`}>
+                      Open a tweet <Icon type="xlogo" size={13}/>
+                    </a>
+                  </li>
+                  <li><b>2. Paste the tweet and your wallet</b></li>
+                </ol>
+                <label>Tweet link<input type="url" inputMode="url" placeholder="https://x.com/you/status/…" required value={tweet} onChange={e => setTweet(e.target.value)} maxLength={300}/></label>
+                <label>Your Solana wallet<input value={wallet} onChange={e => setWallet(e.target.value)} required maxLength={60} placeholder="Wallet holding 2,500,000+ $BOUNTY" autoComplete="off" spellCheck={false}/></label>
+                <label>Note for the reviewer <small>(optional)</small><textarea rows={2} maxLength={280} value={note} onChange={e => setNote(e.target.value)} placeholder="Timestamp where the sixth star appears, anything to look for…"/></label>
+                {formError && <p className="error" role="alert">{formError}</p>}
+                <button type="submit" className="btn btn-pink" disabled={sending}>{sending ? 'Submitting…' : 'Submit for review'}</button>
+                <p className="note">Your tweet link, wallet and status are shown publicly on the submissions board.</p>
+              </form>
+            )}
           </div>
         ) : modal?.type === 'eligibility' ? (
           <div className="modal-body">
