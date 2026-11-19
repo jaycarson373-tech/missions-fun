@@ -13,11 +13,11 @@ const live = liveBounties[0];
 const steps = [
   {icon: 'wallet', t: 'Hold 2.5M+', b: 'Keep at least 2,500,000 $BOUNTY in your Solana wallet.'},
   {icon: 'clip', t: 'Clip it', b: 'Do the bounty in GTA VI. One continuous clip, no cuts.'},
-  {icon: 'coin', t: 'Get paid', b: 'Submit the clip with your wallet. Pass and you get the reward in TTWO from the bounty pool.'},
+  {icon: 'coin', t: 'Get paid', b: 'Submit the clip with your wallet. Pass and the reward is paid from the bounty pool.'},
 ];
 
 const faq = [
-  ['Where does the reward come from?', 'Trading fees fill the bounty pool, and the pool holds TTWO (Take-Two). Each reward is paid in TTWO worth the SOL amount on the bounty, so 1 SOL means 1 SOL worth of TTWO. No team supply. Subject to platform rules and legal review; payouts are not live yet.'],
+  ['Where does the reward come from?', 'Trading fees fill the bounty pool, and rewards are paid from it. The amount is shown in SOL and paid out in TTWO, since $BOUNTY is paired with it. No team supply. Subject to platform rules and legal review; payouts are not live yet.'],
   ['When is the next bounty?', 'When the pool fills. Next bounties stay secret until they drop, so nobody gets a head start.'],
   ['Can more than one person win?', 'No. Each bounty pays the first clip that passes review. After that it closes.'],
   ['How are clips checked?', 'Against the bounty’s written rules, with AI helping and a person making the call. Your wallet must hold 2,500,000+ $BOUNTY.'],
@@ -118,7 +118,7 @@ export default function Missions() {
         <section className="hero">
           <Scene className="hero-scene"/>
           <div className="hero-copy">
-            <p className="pill"><span className="live-dot"/>{liveBounties.length} bounties live · {liveBounties.reduce((t, m) => t + parseFloat(m.reward), 0)} SOL in TTWO up for grabs</p>
+            <p className="pill"><span className="live-dot"/>{liveBounties.length} bounties live · {liveBounties.reduce((t, m) => t + parseFloat(m.reward), 0)} SOL up for grabs</p>
             <h1>Pull it off.<br/>Clip it.<br/><span className="vice-text">Get paid.</span></h1>
             <p className="lede">Wild things to pull off in GTA VI. Clip it, submit it with your wallet, and the first clip that passes takes the bounty.</p>
             <div className="hero-actions">
@@ -135,7 +135,8 @@ export default function Missions() {
                 <span className="label"><span className="live-dot"/>Live · Bounty #{m.id}</span>
                 <span className="wanted-row" aria-label={`${m.wanted}-star wanted level`}>{Array.from({length: m.wanted}, (_, i) => <Star key={i} size={26}/>)}</span>
                 <b className="amount">{m.reward}</b>
-                <span className="label">worth of TTWO</span>
+                <span className="label">Reward</span>
+                <small className="paid-in">paid in TTWO</small>
               </div>
               <div className="card-body">
                 <Stars n={m.difficulty} label size={18}/>
@@ -164,7 +165,7 @@ export default function Missions() {
                 <span className="label"><Icon type="lock" size={14}/>Bounty #00{n}</span>
                 <b className="q">???</b>
                 <span className="redact" aria-hidden="true"><i/><i/></span>
-                <span className="label">??? SOL in TTWO · drops when the pool fills</span>
+                <span className="label">Reward ??? · drops when the pool fills</span>
               </div>
             ))}
           </div>
@@ -180,7 +181,7 @@ export default function Missions() {
               </li>
             ))}
           </ol>
-          <p className="fees">Fees fill the pool <Icon size={14}/> the pool holds TTWO <Icon size={14}/> a new bounty posts when it’s full. <b>No team supply.</b></p>
+          <p className="fees">Fees fill the pool <Icon size={14}/> a new bounty posts when it’s full. <b>No team supply.</b></p>
           <button className="link-btn" onClick={() => setModal({type: 'eligibility'})}>Check if an amount is 2.5M+</button>
         </section>
 
@@ -211,7 +212,7 @@ export default function Missions() {
           <div className="modal-body">
             <p className="label">Bounty #{modal.mission.id} · submit a clip</p>
             <h2 id="modal-title">{modal.mission.title}</h2>
-            <p className="note">Reward: {modal.mission.reward} worth of TTWO. First clip that passes review wins.</p>
+            <p className="note">Reward: {modal.mission.reward}. First clip that passes review wins.</p>
             <form onSubmit={e => { e.preventDefault(); exportProof(modal.mission); }}>
               <label>Your Solana wallet<input value={wallet} onChange={e => setWallet(e.target.value)} required maxLength={60} placeholder="Wallet holding 2,500,000+ $BOUNTY" autoComplete="off" spellCheck={false}/></label>
               <label>Clip link<input type="url" placeholder="https://…" required value={evidence} onChange={e => setEvidence(e.target.value)} maxLength={2000}/></label>

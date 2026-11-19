@@ -90,6 +90,7 @@ ol,ul{margin:0;padding:0;list-style:none}
 .wanted-row .star.on path{fill:#fff;stroke:#000;animation:wflash 1s steps(1) infinite}
 .wanted-row .star:nth-child(even) path{animation-delay:.5s}
 @keyframes wflash{50%{fill:#5aa9ff}}
+.paid-in{font-size:11px;color:#ffffffa6;letter-spacing:.04em}
 .amount{font:clamp(64px,7vw,104px)/1 var(--display);color:#fff;text-shadow:3px 3px 0 #000;margin-top:6px}
 .card-body{padding:clamp(24px,3vw,40px)}
 .card-body h2{font:clamp(40px,4.4vw,64px)/.92 var(--display);text-transform:uppercase;margin:12px 0}
