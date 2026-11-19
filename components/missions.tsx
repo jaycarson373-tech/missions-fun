@@ -4,53 +4,24 @@ import {
   liveBounties, queuedBounties, calculateEligibility, makeProofDraft, briefLink, briefIdFromHash,
   shareText, xIntent, type Mission,
 } from '@/lib/missions';
-import {Icon, Skyline, Star} from './art';
-import {LockedTicket, Stars} from './poster';
-import ChallengeDraft from './challenge-draft';
+import {Icon, Scene, Star} from './art';
+import {Stars} from './poster';
 
 type Modal = {type: 'submit'; mission: Mission} | {type: 'eligibility'} | null;
 const live = liveBounties[0];
 
-const ticker = [
-  `Bounty #${live.id} is live`, live.title, 'Fees fill the pool', 'The pool holds Take-Two', 'One clip. No cuts.', 'No team supply',
-];
-
 const steps = [
-  {icon: 'wallet', t: 'Hold 2.5M+', b: 'Keep at least 2,500,000 $BOUNTY in your Solana wallet. That is what makes you eligible.'},
-  {icon: 'clip', t: 'Pull it off', b: 'Do the live bounty in GTA VI and record it in one continuous clip, HUD on, no cuts.'},
-  {icon: 'check', t: 'Submit with your wallet', b: 'Send the clip link with your wallet address. The clip is checked against the rules and your wallet against the 2.5M minimum.'},
-  {icon: 'coin', t: 'Get the bounty', b: 'Pass and the reward is paid in Take-Two from the bounty pool. Then the next bounty goes up.'},
-];
-
-const loop = [
-  ['Trades', 'Every $BOUNTY trade pays a creator fee'],
-  ['Pool', 'Fees fill the bounty pool, held in Take-Two'],
-  ['Bounty', 'A new bounty goes up when the pool can fund it'],
-  ['Payout', 'The first clip that passes gets paid from the pool'],
+  {icon: 'wallet', t: 'Hold 2.5M+', b: 'Keep at least 2,500,000 $BOUNTY in your Solana wallet.'},
+  {icon: 'clip', t: 'Clip it', b: 'Do the bounty in GTA VI. One continuous clip, no cuts.'},
+  {icon: 'coin', t: 'Get paid', b: 'Submit the clip with your wallet. Pass and you’re paid in Take-Two from the pool.'},
 ];
 
 const faq = [
-  ['How do I win a bounty?', 'Do the live bounty in GTA VI, record one uncut clip and submit it with your wallet. If the clip meets every rule and your wallet holds 2,500,000 $BOUNTY or more, you get the reward.'],
-  ['Why do I need 2.5M tokens?', 'Only wallets holding at least 2,500,000 $BOUNTY can submit. The calculator on this page is an estimate only. The real check happens against your wallet when submissions open.'],
-  ['Where does the reward come from?', 'Creator fees from $BOUNTY trading fill the bounty pool, and the pool holds Take-Two. Rewards are paid from it. Everything is subject to platform rules and legal review, and payouts are not live in this preview.'],
-  ['When does the next bounty drop?', 'Bounties go up one at a time. Once the pool has enough in it to fund the next one, it is posted here.'],
-  ['Is there a team supply?', 'No. There is no team token allocation.'],
-  ['How are clips checked?', 'Each bounty has written rules you can judge from footage. Clips are checked against every rule, with AI assisting and a person making the call. Review is in build and not active yet.'],
-  ['Is this made by Rockstar?', 'No. BOUNTY is an independent community project with original artwork. It is not affiliated with Rockstar Games or Take-Two, and tokens give no access to GTA VI or official rewards.'],
+  ['Where does the reward come from?', 'Trading fees fill the bounty pool, and the pool holds Take-Two. Rewards are paid from it. No team supply. Subject to platform rules and legal review; payouts are not live yet.'],
+  ['When is the next bounty?', 'One bounty runs at a time. When the pool can fund another one, it gets posted here.'],
+  ['How are clips checked?', 'Against the bounty’s written rules, with AI helping and a person making the call. Your wallet must hold 2,500,000+ $BOUNTY.'],
+  ['Is this made by Rockstar?', 'No. BOUNTY is an independent community project with original artwork, not affiliated with Rockstar Games or Take-Two.'],
 ];
-
-function useReveal() {
-  useEffect(() => {
-    const els = document.querySelectorAll<HTMLElement>('.reveal');
-    if (!('IntersectionObserver' in window)) return;
-    document.documentElement.classList.add('js');
-    const io = new IntersectionObserver(entries => entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-    }), {rootMargin: '0px 0px -8% 0px'});
-    els.forEach(e => io.observe(e));
-    return () => io.disconnect();
-  }, []);
-}
 
 function Countdown() {
   const [t, setT] = useState(300);
@@ -62,23 +33,6 @@ function Countdown() {
   return <span className="timer">{String(Math.floor(t / 60)).padStart(2, '0')}:{String(t % 60).padStart(2, '0')}</span>;
 }
 
-function Phone() {
-  return (
-    <div className="phone" aria-hidden="true">
-      <div className="phone-screen">
-        <div className="phone-wall"><Skyline/></div>
-        <div className="phone-bar"><span>11:19</span><span className="phone-dots"><i/><i/><i/></span></div>
-        <p className="phone-clock">11:19</p>
-        <div className="notifs">
-          <div className="notif n1"><img src="/mark.svg" width="34" height="34" alt=""/><div><b>BOUNTY · now</b><p>New bounty posted: <strong>{live.title}</strong></p></div></div>
-          <div className="notif n2"><span className="notif-ico c-teal"><Icon type="coin" size={20}/></span><div><b>Pool · 2m</b><p>Fees are filling the pool. Next bounty posts when it can fund one.</p></div></div>
-          <div className="notif n3"><span className="notif-ico c-sun"><Icon type="clip" size={20}/></span><div><b>Reminder</b><p>One clip. No cuts. Wallet needs 2.5M+.</p></div></div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function Missions() {
   const [modal, setModal] = useState<Modal>(null);
   const [notice, setNotice] = useState('');
@@ -88,10 +42,8 @@ export default function Missions() {
   const [wallet, setWallet] = useState('');
   const [notes, setNotes] = useState('');
   const [formError, setFormError] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLElement | null>(null);
-  useReveal();
 
   useEffect(() => {
     if (modal) {
@@ -165,176 +117,77 @@ export default function Missions() {
     <div className="site">
       <a className="skip" href="#main">Skip to content</a>
 
-      <header className={menuOpen ? 'top open' : 'top'}>
+      <header className="top">
         <a href="#" className="brand" aria-label="Bounty home"><img src="/mark.svg" width="34" height="34" alt=""/><span>Bounty</span></a>
-        <nav id="nav" aria-label="Main navigation" onClick={() => setMenuOpen(false)}>
-          <a href="#bounty">Live bounty</a>
-          <a href="#how">How it works</a>
-          <a href="#pool">The pool</a>
-          <a href="#faq">FAQ</a>
-        </nav>
-        <div className="top-right">
-          <button className="btn btn-pink btn-sm" onClick={openSubmit}>Submit a clip</button>
-          <button className="menu-btn" aria-expanded={menuOpen} aria-controls="nav" aria-label="Menu" onClick={() => setMenuOpen(!menuOpen)}><i/><i/></button>
-        </div>
+        <nav aria-label="Main navigation"><a href="#bounty">Bounty</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+        <button className="btn btn-pink btn-sm" onClick={openSubmit}>Submit a clip</button>
       </header>
 
       <main id="main">
-        {/* HERO */}
         <section className="hero">
-          <div className="sky" aria-hidden="true"/>
-          <Skyline className="hero-city"/>
-          <div className="retro-grid" aria-hidden="true"><i/></div>
-
+          <Scene className="hero-scene"/>
           <div className="hero-copy">
-            <p className="kicker"><span className="live-dot"/>GTA VI clip bounties · Bounty #{live.id} live</p>
-            <h1>Pull it off.<br/><span className="vice-text">Clip it.</span><br/>Get the bounty.</h1>
-            <p className="lede">Fun, ridiculous, hard things to do in GTA VI, posted one at a time. Nail it in one uncut clip, submit it with your wallet, and get paid in Take-Two from the bounty pool.</p>
+            <p className="pill"><span className="live-dot"/>Bounty #{live.id} is live</p>
+            <h1>One bounty.<br/>One clip.<br/><span className="vice-text">Get paid.</span></h1>
+            <p className="lede">Wild things to pull off in GTA VI, one at a time. Clip it, submit it with your wallet, get paid in Take-Two.</p>
             <div className="hero-actions">
-              <a href="#bounty" className="btn btn-pink shimmer">See the live bounty <Icon size={18}/></a>
-              <a href="#how" className="btn btn-outline">How it works</a>
+              <a href="#bounty" className="btn btn-pink">See the bounty <Icon size={18}/></a>
+              <a href="#how" className="btn btn-ghost">How it works</a>
             </div>
-            <p className="fine">Preview. Submissions and payouts open at launch. Not affiliated with Rockstar Games.</p>
           </div>
-          <div className="hero-phone"><Phone/></div>
         </section>
 
-        <div className="ticker" aria-hidden="true">
-          <div className="ticker-track">
-            {[0, 1].map(k => <span key={k}>{ticker.map(t => <b key={t}>{t}<Star size={14}/></b>)}</span>)}
-          </div>
-        </div>
-
-        {/* LIVE BOUNTY */}
-        <section className="live-sec" id="bounty">
-          <div className="head reveal">
-            <p className="kicker">Live now</p>
-            <h2 className="h-big">Bounty <span className="vice-text">#{live.id}</span></h2>
-          </div>
-
-          <article className="feature reveal">
-            <div className="feature-art banner">
-              <div className="sky" aria-hidden="true"/>
-              <Skyline/>
-              <div className="banner-hud" aria-hidden="true">
-                <span className="wanted-row">{Array.from({length: 6}, (_, i) => <Star key={i} size={46}/>)}</span>
-                <Countdown/>
-              </div>
-              <span className="chip-status live"><span className="live-dot"/>Live</span>
+        <section className="bounty" id="bounty">
+          <article className="card">
+            <div className="card-timer">
+              <span className="label"><span className="live-dot"/>Live · Bounty #{live.id}</span>
+              <span className="wanted-row" aria-hidden="true">{Array.from({length: 6}, (_, i) => <Star key={i} size={30}/>)}</span>
+              <Countdown/>
             </div>
-            <div className="feature-body">
-              <div className="fb-main">
-              <div className="feature-meta"><span className="tag">{live.category}</span><Stars n={live.difficulty} label size={20}/></div>
-              <h3>{live.title}</h3>
-              <p className="feature-lede">{live.description}</p>
-              <div className="feature-actions">
-                <button className="btn btn-pink shimmer" onClick={openSubmit}>Submit your clip <Icon type="clip" size={18}/></button>
+            <div className="card-body">
+              <Stars n={live.difficulty} label size={18}/>
+              <h2>{live.title}</h2>
+              <p>{live.description}</p>
+              <ul className="rules">
+                <li><b>Fail if</b>{live.rules.fail}</li>
+                <li><b>Clip</b>{live.proof[0]}, wanted level and timer visible</li>
+                <li><b>Reward</b>Take-Two from the pool</li>
+              </ul>
+              <div className="card-actions">
+                <button className="btn btn-pink" onClick={openSubmit}>Submit your clip <Icon type="clip" size={18}/></button>
                 <button className="chip" onClick={() => copyLink(live)}>Copy link</button>
-                <a className="chip" href={shareHref} target="_blank" rel="noopener noreferrer">Post on <Icon type="x" size={13}/></a>
-              </div>
-              <p className="eligible"><Icon type="wallet" size={16}/>Eligible wallets hold 2,500,000+ $BOUNTY. <button className="link-btn" onClick={() => setModal({type: 'eligibility'})}>Check an amount</button></p>
-              </div>
-              <div className="fb-side">
-              <dl className="rule-sheet">
-                <div><dt>Vehicle</dt><dd>{live.rules.vehicle}</dd></div>
-                <div><dt>Limit</dt><dd>{live.rules.limit}</dd></div>
-                <div><dt>Fail if</dt><dd>{live.rules.fail}</dd></div>
-                <div><dt>Reward</dt><dd>Take-Two, paid from the pool</dd></div>
-              </dl>
-              <p className="proof-head">The clip must show</p>
-              <ul className="proof-list">{live.proof.map(p => <li key={p}><Icon type="check" size={17}/>{p}</li>)}</ul>
+                <a className="chip" href={shareHref} target="_blank" rel="noopener noreferrer">Share on <Icon type="x" size={13}/></a>
               </div>
             </div>
           </article>
-
-          <div className="queue reveal">
-            <div className="queue-head">
-              <div>
-                <h3>Up next</h3>
-                <p>The next bounty drops when the pool can fund it.</p>
-              </div>
-              <div className="pool-meter" aria-label="Pool size goes live with the token">
-                <span>Bounty pool</span>
-                <div className="bar"><i/></div>
-                <small>Live pool size shows here at launch</small>
-              </div>
-            </div>
-            <div className="queue-grid">
-              {queuedBounties.slice(0, 3).map((m, i) => <LockedTicket key={m.id} no={`Bounty #00${i + 2}`} category={m.category} stars={m.difficulty}/>)}
-            </div>
-          </div>
+          <p className="next"><Icon type="lock" size={16}/>{queuedBounties.length} more bounties are queued. The next one posts when the pool fills.</p>
         </section>
 
-        {/* HOW IT WORKS */}
         <section className="how" id="how">
-          <div className="head reveal">
-            <p className="kicker">How it works</p>
-            <h2 className="h-big">Four steps.<br/><span className="vice-text">That’s it.</span></h2>
-          </div>
-          <ol className="how-steps">
+          <h2 className="h2">How it works</h2>
+          <ol className="steps">
             {steps.map((s, i) => (
-              <li key={s.t} className="reveal" style={{transitionDelay: `${i * 80}ms`}}>
-                <div className="how-top"><span className="how-no">0{i + 1}</span><span className="how-ico"><Icon type={s.icon} size={26}/></span></div>
-                <h3>{s.t}</h3>
-                <p>{s.b}</p>
+              <li key={s.t}>
+                <span className="step-ico"><Icon type={s.icon} size={24}/></span>
+                <div><h3><em>{i + 1}</em>{s.t}</h3><p>{s.b}</p></div>
               </li>
             ))}
           </ol>
+          <p className="fees">Fees fill the pool <Icon size={14}/> the pool holds Take-Two <Icon size={14}/> a new bounty posts when it’s full. <b>No team supply.</b></p>
+          <button className="link-btn" onClick={() => setModal({type: 'eligibility'})}>Check if an amount is 2.5M+</button>
         </section>
 
-        {/* THE POOL */}
-        <section className="pool" id="pool">
-          <div className="pool-grid">
-            <div className="head reveal">
-              <p className="kicker">The pool</p>
-              <h2 className="h-big">Fees in.<br/><span className="vice-text">Bounties out.</span></h2>
-              <p className="sub">Trading fees fill the bounty pool, and the pool holds Take-Two. Rewards come out of it, and every time it can fund another one, a new bounty goes up. No team supply.</p>
-            </div>
-            <ol className="loop reveal" aria-label="How the pool works">
-              {loop.map(([t, b], i) => (
-                <li key={t} style={{['--i' as string]: i}}><b>{t}</b><span>{b}</span></li>
-              ))}
-            </ol>
-          </div>
-          <div className="pool-stats reveal">
-            <div><b>0</b><span>team supply</span></div>
-            <div><b className="c-pink">1</b><span>bounty live at a time</span></div>
-            <div><b className="c-sun">2.5M+</b><span>to be eligible</span></div>
-            <div><b className="c-teal">TTWO</b><span>what the pool holds</span></div>
-          </div>
-        </section>
-
-        <ChallengeDraft/>
-
-        {/* FAQ */}
         <section className="faq" id="faq">
-          <div className="head reveal"><p className="kicker">Questions</p><h2 className="h-big">FAQ</h2></div>
-          <div className="faq-list reveal">
-            {faq.map(([q, a], i) => (
-              <details key={q} open={i === 0}><summary>{q}<Icon type="plus" size={20}/></summary><p>{a}</p></details>
-            ))}
-          </div>
-        </section>
-
-        {/* FINAL */}
-        <section className="final">
-          <div className="sky" aria-hidden="true"/>
-          <Skyline/>
-          <div className="final-inner reveal">
-            <p className="kicker"><span className="live-dot"/>Live now</p>
-            <h2 className="h-big h-shadow">{live.title}</h2>
-            <div className="hero-actions">
-              <button className="btn btn-pink shimmer" onClick={openSubmit}>Submit your clip <Icon size={18}/></button>
-              <a href="#create" className="btn btn-outline">Pitch a bounty</a>
-            </div>
+          <h2 className="h2">FAQ</h2>
+          <div className="faq-list">
+            {faq.map(([q, a]) => <details key={q}><summary>{q}<Icon type="plus" size={18}/></summary><p>{a}</p></details>)}
           </div>
         </section>
       </main>
 
       <footer>
-        <a href="#" className="brand"><img src="/mark.svg" alt="" width="26" height="26"/><span>Bounty</span></a>
-        <p>Independent GTA VI community project. Not affiliated with Rockstar Games or Take-Two. Rewards are subject to platform rules and legal review.</p>
-        <div><a href="#faq">FAQ</a><a href="/brand/logo.svg" download>Brand mark <Icon type="download" size={14}/></a></div>
+        <span className="brand"><img src="/mark.svg" alt="" width="24" height="24"/><span>Bounty</span></span>
+        <p>Independent GTA VI community project. Not affiliated with Rockstar Games or Take-Two.</p>
       </footer>
 
       {notice && (
@@ -349,28 +202,25 @@ export default function Missions() {
         <button className="modal-close" aria-label="Close dialog" onClick={() => setModal(null)}><Icon type="close"/></button>
         {modal?.type === 'submit' ? (
           <div className="modal-body">
-            <p className="kicker">Bounty #{modal.mission.id} · submit a clip</p>
+            <p className="label">Bounty #{modal.mission.id} · submit a clip</p>
             <h2 id="modal-title">{modal.mission.title}</h2>
-            <ul className="proof-list">{modal.mission.proof.map(p => <li key={p}><Icon type="check" size={17}/>{p}</li>)}</ul>
             <form onSubmit={e => { e.preventDefault(); exportProof(modal.mission); }}>
-              <label>Your Solana wallet<input value={wallet} onChange={e => setWallet(e.target.value)} required maxLength={60} placeholder="The wallet holding 2,500,000+ $BOUNTY" autoComplete="off" spellCheck={false}/></label>
+              <label>Your Solana wallet<input value={wallet} onChange={e => setWallet(e.target.value)} required maxLength={60} placeholder="Wallet holding 2,500,000+ $BOUNTY" autoComplete="off" spellCheck={false}/></label>
               <label>Clip link<input type="url" placeholder="https://…" required value={evidence} onChange={e => setEvidence(e.target.value)} maxLength={2000}/></label>
-              <label>What does the clip show?<textarea rows={3} required minLength={20} maxLength={2000} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Timestamps, when the timer starts and ends, anything a reviewer should look for…"/></label>
+              <label>What does it show?<textarea rows={3} required minLength={20} maxLength={2000} value={notes} onChange={e => setNotes(e.target.value)} placeholder="When the timer starts and ends, anything a reviewer should look for…"/></label>
               {formError && <p className="error" role="alert">{formError}</p>}
               <button type="submit" className="btn btn-pink">Save submission <Icon type="download" size={18}/></button>
-              <p className="note">Submissions open at launch. For now this saves a draft with your wallet and clip link on your device. Nothing is sent, signed or checked.</p>
+              <p className="note">Submissions open at launch. For now this saves a draft on your device. Nothing is sent or checked.</p>
             </form>
           </div>
         ) : modal?.type === 'eligibility' ? (
-          <div className="modal-body access">
-            <p className="kicker">Eligibility</p>
+          <div className="modal-body">
+            <p className="label">Eligibility</p>
             <h2 id="modal-title">2,500,000+ <span className="vice-text">$BOUNTY</span></h2>
-            <p className="modal-lede">Your wallet needs at least 2.5 million tokens to submit a clip.</p>
-            <dl className="rule-sheet one"><div><dt>Token mint</dt><dd>Published at launch</dd></div></dl>
             <p className="note">Calculator only. No wallet is connected or checked.</p>
             <form className="calc" onSubmit={e => { e.preventDefault(); checkAmount(); }}>
               <label>Token amount<input inputMode="decimal" value={amount} onChange={e => { setAmount(e.target.value); setEstimate(''); }} placeholder="2500000" required maxLength={40}/></label>
-              <button className="btn btn-pink" type="submit">Check <Icon size={18}/></button>
+              <button className="btn btn-pink" type="submit">Check</button>
             </form>
             {estimate && <p className="estimate" role="status">{estimate}</p>}
           </div>

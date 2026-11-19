@@ -1,17 +1,13 @@
 // Original illustrations. Nothing here is taken from Rockstar Games artwork.
-const NIGHT = '#130a22', GRID = '#2a1942', ROAD = '#08040f', BLOCK = '#2b1b45', BLOCK_EDGE = '#45306a';
 
 export function Icon({type = 'arrow', size = 20}: {type?: string; size?: number}) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {type === 'search' ? <><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></>
-        : type === 'close' ? <path d="m6 6 12 12M6 18 18 6"/>
-        : type === 'bookmark' ? <path d="M6 4h12v17l-6-4-6 4z"/>
+      {type === 'close' ? <path d="m6 6 12 12M6 18 18 6"/>
         : type === 'check' ? <path d="m5 12 4 4L19 6"/>
         : type === 'plus' ? <path d="M12 4v16M4 12h16"/>
         : type === 'download' ? <path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/>
         : type === 'x' ? <path d="M4 4l16 16M20 4 4 20" strokeWidth="2.4"/>
-        : type === 'play' ? <path d="M7 4v16l13-8z" fill="currentColor"/>
         : type === 'lock' ? <><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></>
         : type === 'wallet' ? <><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4z"/><path d="M4 7V6a2 2 0 0 1 2-2h10v3M16 13.5h.01"/></>
         : type === 'clip' ? <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z" fill="currentColor"/></>
@@ -29,103 +25,134 @@ export function Star({on = true, size = 18}: {on?: boolean; size?: number}) {
   );
 }
 
-export function MissionArt({kind = 'map', color = '#ff2e88', large = false}: {kind?: string; color?: string; large?: boolean}) {
-  const label = kind === 'map' ? 'Illustrated escape route through a fictional city'
-    : kind === 'road' ? 'Illustrated driving checkpoint'
-    : kind === 'camera' ? 'Illustrated viewfinder over a sunset skyline'
-    : 'Illustrated evidence dossier';
-  return (
-    <svg className={`mission-art ${large ? 'large' : ''}`} viewBox="0 0 640 380" preserveAspectRatio="xMidYMid slice" role="img" aria-label={label}>
-      <rect width="640" height="380" fill={NIGHT}/>
-      {Array.from({length: 14}, (_, i) => <path key={i} d={`M${i * 48} 0v380M0 ${i * 32}h640`} stroke={GRID} strokeWidth=".8"/>)}
-      {kind === 'map' ? <>
-        <path d="M-40 360 90 220 65 90 220-30M235 420 284 255 423 171 490-20M400 420 500 290 700 275" stroke={ROAD} strokeWidth="45" fill="none"/>
-        <path d="M-40 360 90 220 65 90 220-30M235 420 284 255 423 171 490-20M400 420 500 290 700 275" stroke="#5a3f86" strokeWidth="2" fill="none"/>
-        {[[160, 140], [365, 290], [445, 90], [550, 180], [200, 320], [300, 80]].map(([x, y], i) =>
-          <g key={i} transform={`translate(${x} ${y}) rotate(-28)`}><rect x="-28" y="-22" width="56" height="44" rx="2" fill={BLOCK}/><path d="M-24-18h44v32" fill="none" stroke={BLOCK_EDGE}/></g>)}
-        <path className="route" d="m95 315 93-103 123 28 55-91 104-46" stroke={color} strokeWidth="5" fill="none" strokeLinejoin="round"/>
-        <circle cx="95" cy="315" r="8" fill={color}/>
-        <circle cx="470" cy="103" r="22" fill={NIGHT} stroke={color} strokeWidth="2"/>
-        <circle cx="470" cy="103" r="7" fill={color}/>
-        <path d="M470 69v13m0 43v13m-34-35h13m43 0h13" stroke={color} strokeWidth="2"/>
-        <rect x="365" y="185" width="164" height="43" rx="3" fill="#fff6ee"/>
-        <text x="380" y="211" fill={NIGHT} fontFamily="monospace" fontSize="13" fontWeight="700">ESCAPE / ROUTE 01</text>
-      </> : kind === 'road' ? <>
-        <defs><linearGradient id={`sky-${color.slice(1)}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#2a0f45"/><stop offset="1" stopColor="#b52872"/></linearGradient></defs>
-        <rect width="640" height="185" fill={`url(#sky-${color.slice(1)})`} opacity=".55"/>
-        <path d="M75 400 285 175h70L565 400" fill={ROAD} stroke={color} strokeWidth="3"/>
-        <path d="m319 185 2 20m-1 23 3 39m-2 32 3 70" stroke={color} strokeWidth="4"/>
-        <path d="M160 270V95h320v175M160 95l35 24h250l35-24" fill="none" stroke={color} strokeWidth="9"/>
-        <text x="224" y="157" fill={color} fontSize="22" fontFamily="monospace" fontWeight="700">CHECKPOINT</text>
-        <path d="M0 185h140M500 185h140" stroke="#5a3f86"/>
-      </> : kind === 'camera' ? <>
-        <defs><linearGradient id="sunset-cam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#ffd23f"/><stop offset=".6" stopColor="#ff8a2a"/><stop offset="1" stopColor="#ff2e88"/></linearGradient></defs>
-        <circle cx="417" cy="150" r="72" fill="url(#sunset-cam)"/>
-        {[150, 168, 184, 198].map(y => <rect key={y} x="340" y={y} width="160" height={4 + (y - 150) / 12} fill={NIGHT}/>)}
-        {[100, 150, 204, 260, 310, 380, 440, 495].map((x, i) =>
-          <rect key={x} x={x} y={230 - (i % 3) * 40} width="45" height={130 + (i % 3) * 40} fill="#0c0616" stroke={BLOCK_EDGE}/>)}
-        <path d="M90 125V75h55M495 75h55v50M90 255v50h55M495 305h55v-50M300 190h40m-20-20v40" stroke={color} strokeWidth="4" fill="none"/>
-      </> : <>
-        <g transform="rotate(-7 320 190)">
-          <rect x="189" y="51" width="225" height="288" rx="4" fill="#f1e4cc"/>
-          <rect x="211" y="79" width="80" height="12" fill="#1c140e"/>
-          <path d="M213 122h173M213 147h145M213 172h165M213 229h105M213 253h105M213 277h82" stroke="#a89474" strokeWidth="8"/>
-          <rect x="298" y="188" width="143" height="95" fill={color}/>
-          <text x="316" y="230" fontFamily="monospace" fill="#1c140e" fontSize="17" fontWeight="700">CLIP</text>
-          <text x="316" y="255" fontFamily="monospace" fill="#1c140e" fontSize="17" fontWeight="700">REQUIRED</text>
-        </g>
-      </>}
-      <path d="M22 346h22m-11-11v22M596 346h22m-11-11v22" stroke={color}/>
-    </svg>
-  );
-}
-
-/* Deterministic pseudo-random so server and client render the same skyline. */
+/* Deterministic pseudo-random so server and client render the same picture. */
 const rnd = (i: number) => { const x = Math.sin(i * 9301 + 49297) * 233280; return x - Math.floor(x); };
+const INK = '#0a0612';
 
-function Palm({x, h, flip = false}: {x: number; h: number; flip?: boolean}) {
-  const s = flip ? -1 : 1, top = 420 - h;
-  const tx = x + s * h * 0.18;
+function Palm({x, base, h, flip = false}: {x: number; base: number; h: number; flip?: boolean}) {
+  const s = flip ? -1 : 1, top = base - h, tx = x + s * h * 0.16;
   return (
-    <g fill="#07030d">
-      <path d={`M${x - 5} 420 Q${x + s * h * 0.05} ${420 - h * 0.5} ${tx} ${top} L${tx + 6} ${top + 4} Q${x + s * h * 0.08 + 6} ${420 - h * 0.5} ${x + 6} 420Z`}/>
-      {[-150, -110, -70, -30, 10, 45].map((a, i) => {
-        const r = (a * Math.PI) / 180, len = 70 + (i % 2) * 18;
-        const ex = tx + Math.cos(r) * len, ey = top + Math.sin(r) * len * 0.6 + 34;
-        const cx = tx + Math.cos(r) * len * 0.5, cy = top + Math.sin(r) * len * 0.5 - 16;
-        return <path key={a} d={`M${tx} ${top} Q${cx} ${cy} ${ex} ${ey} Q${cx} ${cy + 12} ${tx} ${top + 6}Z`}/>;
+    <g fill={INK}>
+      <path d={`M${x - 9} ${base} Q${x + s * h * 0.05} ${base - h * 0.5} ${tx} ${top} L${tx + 9} ${top + 5} Q${x + s * h * 0.08 + 10} ${base - h * 0.5} ${x + 10} ${base}Z`}/>
+      {[-160, -125, -90, -55, -20, 15, 40].map((a, i) => {
+        const r = (a * Math.PI) / 180, len = h * (0.34 + (i % 2) * 0.07);
+        const ex = tx + Math.cos(r) * len, ey = top + Math.sin(r) * len * 0.55 + h * 0.13;
+        const cx = tx + Math.cos(r) * len * 0.5, cy = top + Math.sin(r) * len * 0.5 - h * 0.06;
+        return <path key={a} d={`M${tx} ${top} Q${cx} ${cy} ${ex} ${ey} Q${cx} ${cy + h * 0.05} ${tx} ${top + 9}Z`}/>;
       })}
     </g>
   );
 }
 
-export function Skyline({className = ''}: {className?: string}) {
-  const buildings = Array.from({length: 46}, (_, i) => {
-    const w = 26 + Math.floor(rnd(i) * 40);
-    const h = 70 + Math.floor(rnd(i + 99) * (i % 7 === 3 ? 250 : 160));
-    return {x: i * 32 - 10, w, h};
-  });
+function SportsCar() {
   return (
-    <svg className={`skyline ${className}`} viewBox="0 0 1440 420" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <g>
+      <ellipse cx="121" cy="2" rx="150" ry="10" fill="#ff2e88" opacity=".55" filter="url(#blur8)"/>
+      <path d="M242-31 L520-18 L520-6 L242-20Z" fill="url(#beam)" opacity=".5"/>
+      <path d="M0-14 L6-30 Q30-36 64-40 L96-58 Q130-66 168-60 L198-44 Q232-40 240-30 L242-14Z" fill={INK} stroke="#ff2e88" strokeWidth="1.6" strokeOpacity=".75"/>
+      <path d="M102-54 L128-60 L160-56 L182-45 L106-45Z" fill="#3b1a55"/>
+      <rect x="0" y="-30" width="9" height="6" rx="1" fill="#ff2e88"/>
+      <rect x="236" y="-32" width="7" height="5" rx="1" fill="#fff4cf"/>
+      {[50, 192].map(cx => <g key={cx}><circle cx={cx} cy="-12" r="15" fill="#000"/><circle cx={cx} cy="-12" r="6" fill="#3a2a55"/></g>)}
+    </g>
+  );
+}
+
+function PoliceCar() {
+  return (
+    <g>
+      <circle cx="108" cy="-66" r="70" fill="#ff2a3d" className="glow-red" filter="url(#blur18)"/>
+      <circle cx="132" cy="-66" r="70" fill="#3d7bff" className="glow-blue" filter="url(#blur18)"/>
+      <path d="M232-30 L470-18 L470-6 L232-20Z" fill="url(#beam)" opacity=".35"/>
+      <path d="M0-14 L4-32 Q20-38 52-40 L78-62 L160-62 L186-40 Q220-38 230-30 L232-14Z" fill={INK} stroke="#9fb4ff" strokeWidth="1.4" strokeOpacity=".5"/>
+      <path d="M86-58 L118-58 L118-43 L76-43Z M124-58 L156-58 L175-43 L124-43Z" fill="#26203f"/>
+      <rect x="98" y="-70" width="21" height="7" rx="2" fill="#ff2a3d" className="flash-red"/>
+      <rect x="121" y="-70" width="21" height="7" rx="2" fill="#3d7bff" className="flash-blue"/>
+      <rect x="226" y="-31" width="7" height="5" rx="1" fill="#fff4cf"/>
+      {[46, 186].map(cx => <g key={cx}><circle cx={cx} cy="-12" r="15" fill="#000"/><circle cx={cx} cy="-12" r="6" fill="#33304a"/></g>)}
+    </g>
+  );
+}
+
+function Helicopter() {
+  return (
+    <g>
+      <path d="M0 0 Q-10-26 30-30 L70-30 Q96-26 96-6 Q90 10 50 12 L20 12 Q4 10 0 0Z" fill={INK}/>
+      <path d="M90-14 L190-22 L192-12 L94-2Z" fill={INK}/>
+      <path d="M186-34 L196-34 L196-2 L186-2Z" fill={INK}/>
+      <path d="M14-6 Q16-22 34-24 L48-24 L48-4 Z" fill="#3b2a5c"/>
+      <path d="M10 22 H86 M24 12 L20 22 M66 12 L70 22" stroke={INK} strokeWidth="4"/>
+      <rect x="44" y="-36" width="8" height="6" fill={INK}/>
+      <ellipse cx="48" cy="-38" rx="110" ry="3" fill={INK} className="rotor"/>
+      <circle cx="28" cy="10" r="5" fill="#fff4cf"/>
+    </g>
+  );
+}
+
+export function Scene({className = ''}: {className?: string}) {
+  const skyline = Array.from({length: 26}, (_, i) => ({x: 20 + i * 26, w: 16 + Math.floor(rnd(i) * 18), h: 20 + Math.floor(rnd(i + 40) * (i % 5 === 2 ? 130 : 70))}));
+  return (
+    <svg className={`scene ${className}`} viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" role="img"
+      aria-label="Illustration: a sports car chased by a police cruiser across a beach causeway at sunset, a helicopter searchlight overhead">
       <defs>
-        <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#ffd23f"/><stop offset=".55" stopColor="#ff8a2a"/><stop offset="1" stopColor="#ff2e88"/>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#170834"/><stop offset=".32" stopColor="#4f1470"/><stop offset=".52" stopColor="#c42d72"/>
+          <stop offset=".6" stopColor="#ff6e3f"/><stop offset=".63" stopColor="#ffb04a"/>
         </linearGradient>
-        <mask id="sun-cut">
-          <rect width="1440" height="420" fill="#fff"/>
-          {[0, 1, 2, 3, 4, 5].map(i => <rect key={i} x="0" y={190 + i * 24} width="1440" height={4 + i * 2.4} fill="#000"/>)}
-        </mask>
+        <radialGradient id="sunG" cx=".5" cy=".35" r=".6"><stop offset="0" stopColor="#fff1b0"/><stop offset=".45" stopColor="#ffc24a"/><stop offset="1" stopColor="#ff5a6e"/></radialGradient>
+        <radialGradient id="halo"><stop offset="0" stopColor="#ff8a4a" stopOpacity=".7"/><stop offset="1" stopColor="#ff2e88" stopOpacity="0"/></radialGradient>
+        <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#8a2a78"/><stop offset=".25" stopColor="#2a2a6e"/><stop offset="1" stopColor="#06101f"/></linearGradient>
+        <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#fff4cf"/><stop offset="1" stopColor="#fff4cf" stopOpacity="0"/></linearGradient>
+        <linearGradient id="spot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fffbe6" stopOpacity=".55"/><stop offset="1" stopColor="#fffbe6" stopOpacity=".04"/></linearGradient>
+        <filter id="blur8" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
+        <filter id="blur18" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="18"/></filter>
       </defs>
-      <circle cx="980" cy="250" r="170" fill="url(#sun)" mask="url(#sun-cut)" className="sun"/>
-      {buildings.map((b, i) => (
-        <g key={i}>
-          <rect x={b.x} y={420 - b.h} width={b.w} height={b.h} fill={i % 3 ? '#12081f' : '#1a0d2c'}/>
-          {Array.from({length: Math.floor(b.h / 22)}, (_, r) => rnd(i * 31 + r) > 0.62 &&
-            <rect key={r} x={b.x + 6 + (r % 2) * (b.w / 2 - 4)} y={420 - b.h + 10 + r * 20} width="5" height="7"
-              fill={rnd(i + r) > 0.5 ? '#ffd23f' : '#ff2e88'} opacity={0.55 + rnd(r + i * 7) * 0.4}/>)}
-        </g>
-      ))}
-      <Palm x={110} h={300}/><Palm x={190} h={240} flip/><Palm x={1260} h={320} flip/><Palm x={1350} h={250}/>
+
+      <rect width="1600" height="900" fill="url(#sky)"/>
+      {Array.from({length: 40}, (_, i) => <circle key={i} cx={rnd(i + 3) * 1600} cy={rnd(i + 77) * 300} r={rnd(i + 9) * 1.4 + .3} fill="#fff" opacity={.25 + rnd(i + 5) * .5}/>)}
+
+      <circle cx="1080" cy="560" r="330" fill="url(#halo)"/>
+      <circle cx="1080" cy="560" r="160" fill="url(#sunG)" className="sun"/>
+
+      <g fill="#3a1350" opacity=".95">
+        {skyline.map((b, i) => <rect key={i} x={b.x} y={560 - b.h} width={b.w} height={b.h}/>)}
+        <rect x="236" y="380" width="22" height="180"/><path d="M247 380v-40" stroke="#3a1350" strokeWidth="3"/>
+        <rect x="410" y="410" width="26" height="150"/>
+      </g>
+      {skyline.flatMap((b, i) => Array.from({length: Math.floor(b.h / 18)}, (_, r) => rnd(i * 13 + r) > 0.6 &&
+        <rect key={`${i}-${r}`} x={b.x + 4 + (r % 2) * (b.w / 2 - 2)} y={560 - b.h + 6 + r * 16} width="3" height="4" fill={rnd(r + i) > .5 ? '#ffd23f' : '#ff7ab8'} opacity=".7"/>))}
+
+      <rect y="560" width="1600" height="340" fill="url(#sea)"/>
+      <g className="shimmer-sea">
+        {Array.from({length: 16}, (_, i) => {
+          const y = 568 + i * i * 0.9 + i * 6, w = 300 - i * 15 + rnd(i) * 40;
+          return <rect key={i} x={1080 - w / 2 + (rnd(i + 20) - .5) * 30} y={y} width={w} height={3 + i * .25} rx="2" fill="#ffc96a" opacity={.55 - i * .03}/>;
+        })}
+      </g>
+
+      <path className="searchlight" d="M1348 186 L1100 694 L1300 694 Z" fill="url(#spot)"/>
+      <g transform="translate(1300 170)" className="heli"><Helicopter/></g>
+
+      {/* causeway */}
+      <g fill={INK}>
+        <rect x="-20" y="690" width="1640" height="20"/>
+        <rect x="-20" y="678" width="1640" height="3" opacity=".9"/>
+        {Array.from({length: 15}, (_, i) => <rect key={i} x={i * 120 + 10} y="708" width="16" height="70"/>)}
+        {Array.from({length: 8}, (_, i) => <g key={i}><rect x={i * 230 + 60} y="600" width="4" height="90"/><path d={`M${i * 230 + 62} 602 q14 -8 28 0`} stroke={INK} strokeWidth="4" fill="none"/></g>)}
+      </g>
+      {Array.from({length: 8}, (_, i) => <circle key={i} cx={i * 230 + 90} cy="606" r="14" fill="#ffd6a0" opacity=".55" filter="url(#blur8)"/>)}
+      <g className="reflect" opacity=".35">
+        {Array.from({length: 8}, (_, i) => <rect key={i} x={i * 230 + 84} y="790" width="12" height="60" rx="6" fill="#ffd6a0" filter="url(#blur8)"/>)}
+      </g>
+
+      <g transform="translate(790 690)"><PoliceCar/></g>
+      <g transform="translate(1120 690)"><SportsCar/></g>
+
+      {/* foreground shore */}
+      <path d="M0 900 V840 Q200 812 420 836 T860 846 Q1180 820 1600 842 V900Z" fill="#07040d"/>
+      <Palm x={120} base={900} h={640}/>
+      <Palm x={250} base={900} h={470} flip/>
+      <Palm x={1490} base={900} h={600} flip/>
     </svg>
   );
 }
