@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   calculateEligibility, makeProofDraft, parseTokenAmount, briefChecks, briefIdFromHash, briefLink, xIntent,
-  missions, liveBounties, queuedBounties, isWalletAddress,
+  missions, liveBounties, queuedBounties, bountyIdeas, isWalletAddress,
 } from '../lib/missions.ts';
 
 const WALLET = 'So11111111111111111111111111111111111111112';
@@ -34,16 +34,17 @@ test('proof validation rejects queued bounties, bad wallets, credentials and exe
   for (const link of ['javascript:alert(1)', 'http://example.com', 'https://user:pass@example.com'])
     assert.throws(() => makeProofDraft('001', link, NOTES, WALLET));
   assert.throws(() => makeProofDraft('999', 'https://example.com', NOTES, WALLET));
-  assert.throws(() => makeProofDraft('002', 'https://example.com', NOTES, WALLET), /not live/);
+  assert.throws(() => makeProofDraft('003', 'https://example.com', NOTES, WALLET), /not live/);
+  assert.ok(makeProofDraft('002', 'https://example.com/clip', NOTES, WALLET));
   assert.throws(() => makeProofDraft('001', 'https://example.com', 'short', WALLET));
   for (const w of ['', '0xabc', 'not a wallet', 'O0Il'.repeat(10)]) assert.throws(() => makeProofDraft('001', 'https://example.com', NOTES, w));
   assert.ok(isWalletAddress(` ${WALLET} `));
 });
 
-test('exactly one bounty is live; the rest wait in the queue', () => {
-  assert.equal(liveBounties.length, 1);
-  assert.equal(liveBounties[0].id, '001');
-  assert.equal(queuedBounties.length, missions.length - 1);
+test('two bounties are live with their rewards', () => {
+  assert.deepEqual(liveBounties.map(m => [m.id, m.reward]), [['001', '1 SOL'], ['002', '0.5 SOL']]);
+  assert.equal(queuedBounties.length, 0);
+  assert.ok(bountyIdeas.length >= 3);
   for (const m of missions) {
     assert.ok([1, 2, 3, 4, 5].includes(m.difficulty));
     for (const k of ['vehicle', 'limit', 'fail'] as const) assert.ok(m.rules[k].length > 2);
@@ -60,7 +61,8 @@ test('brief checks reward measurable rules and flag entry fees', () => {
 
 test('deep links only resolve the live bounty', () => {
   assert.equal(briefIdFromHash('#brief-001'), '001');
-  assert.equal(briefIdFromHash('#brief-002'), null);
+  assert.equal(briefIdFromHash('#brief-002'), '002');
+  assert.equal(briefIdFromHash('#brief-003'), null);
   assert.equal(briefIdFromHash('#brief-999'), null);
   assert.equal(briefIdFromHash('#how'), null);
   assert.equal(briefLink('https://a.b/', '001'), 'https://a.b/#brief-001');

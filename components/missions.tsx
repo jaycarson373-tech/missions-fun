@@ -1,7 +1,7 @@
 'use client';
 import {useEffect, useRef, useState} from 'react';
 import {
-  liveBounties, queuedBounties, calculateEligibility, makeProofDraft, briefLink, briefIdFromHash,
+  liveBounties, bountyIdeas, calculateEligibility, makeProofDraft, briefLink, briefIdFromHash,
   shareText, xIntent, type Mission,
 } from '@/lib/missions';
 import {Icon, Scene, Star} from './art';
@@ -13,25 +13,16 @@ const live = liveBounties[0];
 const steps = [
   {icon: 'wallet', t: 'Hold 2.5M+', b: 'Keep at least 2,500,000 $BOUNTY in your Solana wallet.'},
   {icon: 'clip', t: 'Clip it', b: 'Do the bounty in GTA VI. One continuous clip, no cuts.'},
-  {icon: 'coin', t: 'Get paid', b: 'Submit the clip with your wallet. Pass and you’re paid in Take-Two from the pool.'},
+  {icon: 'coin', t: 'Get paid', b: 'Submit the clip with your wallet. Pass and the reward is paid from the bounty pool.'},
 ];
 
 const faq = [
-  ['Where does the reward come from?', 'Trading fees fill the bounty pool, and the pool holds Take-Two. Rewards are paid from it. No team supply. Subject to platform rules and legal review; payouts are not live yet.'],
-  ['When is the next bounty?', 'One bounty runs at a time. When the pool can fund another one, it gets posted here.'],
+  ['Where does the reward come from?', 'Each bounty’s reward is set in SOL and paid from the bounty pool. Trading fees fill the pool, and the pool holds Take-Two. No team supply. Subject to platform rules and legal review; payouts are not live yet.'],
+  ['When is the next bounty?', 'New bounties get posted as the pool fills. The ideas list shows what’s coming.'],
+  ['Can more than one person win?', 'No. Each bounty pays the first clip that passes review. After that it closes.'],
   ['How are clips checked?', 'Against the bounty’s written rules, with AI helping and a person making the call. Your wallet must hold 2,500,000+ $BOUNTY.'],
   ['Is this made by Rockstar?', 'No. BOUNTY is an independent community project with original artwork, not affiliated with Rockstar Games or Take-Two.'],
 ];
-
-function Countdown() {
-  const [t, setT] = useState(300);
-  useEffect(() => {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const id = setInterval(() => setT(v => (v <= 0 ? 300 : v - 1)), 1000);
-    return () => clearInterval(id);
-  }, []);
-  return <span className="timer">{String(Math.floor(t / 60)).padStart(2, '0')}:{String(t % 60).padStart(2, '0')}</span>;
-}
 
 export default function Missions() {
   const [modal, setModal] = useState<Modal>(null);
@@ -110,8 +101,8 @@ export default function Missions() {
     } catch (e) { setEstimate(e instanceof Error ? e.message : 'Check the amount.'); }
   }
 
-  const openSubmit = () => setModal({type: 'submit', mission: live});
-  const shareHref = xIntent(shareText(live.title), briefLink(typeof location === 'undefined' ? '' : location.origin, live.id));
+  const openSubmit = (m: Mission = live) => setModal({type: 'submit', mission: m});
+  const shareHref = (m: Mission) => xIntent(shareText(m.title), briefLink(typeof location === 'undefined' ? '' : location.origin, m.id));
 
   return (
     <div className="site">
@@ -119,48 +110,57 @@ export default function Missions() {
 
       <header className="top">
         <a href="#" className="brand" aria-label="Bounty home"><img src="/mark.svg" width="34" height="34" alt=""/><span>Bounty</span></a>
-        <nav aria-label="Main navigation"><a href="#bounty">Bounty</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
-        <button className="btn btn-pink btn-sm" onClick={openSubmit}>Submit a clip</button>
+        <nav aria-label="Main navigation"><a href="#bounty">Bounties</a><a href="#ideas">Coming next</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+        <button className="btn btn-pink btn-sm" onClick={() => openSubmit()}>Submit a clip</button>
       </header>
 
       <main id="main">
         <section className="hero">
           <Scene className="hero-scene"/>
           <div className="hero-copy">
-            <p className="pill"><span className="live-dot"/>Bounty #{live.id} is live</p>
-            <h1>One bounty.<br/>One clip.<br/><span className="vice-text">Get paid.</span></h1>
-            <p className="lede">Wild things to pull off in GTA VI, one at a time. Clip it, submit it with your wallet, get paid in Take-Two.</p>
+            <p className="pill"><span className="live-dot"/>{liveBounties.length} bounties live · {liveBounties.reduce((t, m) => t + parseFloat(m.reward), 0)} SOL up for grabs</p>
+            <h1>Pull it off.<br/>Clip it.<br/><span className="vice-text">Get paid.</span></h1>
+            <p className="lede">Wild things to pull off in GTA VI. Clip it, submit it with your wallet, and the first clip that passes takes the bounty.</p>
             <div className="hero-actions">
-              <a href="#bounty" className="btn btn-pink">See the bounty <Icon size={18}/></a>
+              <a href="#bounty" className="btn btn-pink">See the bounties <Icon size={18}/></a>
               <a href="#how" className="btn btn-ghost">How it works</a>
             </div>
           </div>
         </section>
 
         <section className="bounty" id="bounty">
-          <article className="card">
-            <div className="card-timer">
-              <span className="label"><span className="live-dot"/>Live · Bounty #{live.id}</span>
-              <span className="wanted-row" aria-hidden="true">{Array.from({length: 6}, (_, i) => <Star key={i} size={30}/>)}</span>
-              <Countdown/>
-            </div>
-            <div className="card-body">
-              <Stars n={live.difficulty} label size={18}/>
-              <h2>{live.title}</h2>
-              <p>{live.description}</p>
-              <ul className="rules">
-                <li><b>Fail if</b>{live.rules.fail}</li>
-                <li><b>Clip</b>{live.proof[0]}, wanted level and timer visible</li>
-                <li><b>Reward</b>Take-Two from the pool</li>
-              </ul>
-              <div className="card-actions">
-                <button className="btn btn-pink" onClick={openSubmit}>Submit your clip <Icon type="clip" size={18}/></button>
-                <button className="chip" onClick={() => copyLink(live)}>Copy link</button>
-                <a className="chip" href={shareHref} target="_blank" rel="noopener noreferrer">Share on <Icon type="x" size={13}/></a>
+          {liveBounties.map(m => (
+            <article className="card" key={m.id}>
+              <div className="card-reward">
+                <span className="label"><span className="live-dot"/>Live · Bounty #{m.id}</span>
+                <span className="wanted-row" aria-label={`${m.wanted}-star wanted level`}>{Array.from({length: m.wanted}, (_, i) => <Star key={i} size={26}/>)}</span>
+                <b className="amount">{m.reward}</b>
+                <span className="label">Reward</span>
               </div>
-            </div>
-          </article>
-          <p className="next"><Icon type="lock" size={16}/>{queuedBounties.length} more bounties are queued. The next one posts when the pool fills.</p>
+              <div className="card-body">
+                <Stars n={m.difficulty} label size={18}/>
+                <h2>{m.title}</h2>
+                <p>{m.description}</p>
+                <ul className="rules">
+                  <li><b>Fail if</b>{m.rules.fail}</li>
+                  {m.proof.slice(1).map(p => <li key={p}><b>Clip</b>{p}</li>)}
+                </ul>
+                <div className="card-actions">
+                  <button className="btn btn-pink" onClick={() => openSubmit(m)}>Submit your clip <Icon type="clip" size={18}/></button>
+                  <button className="chip" onClick={() => copyLink(m)}>Copy link</button>
+                  <a className="chip" href={shareHref(m)} target="_blank" rel="noopener noreferrer">Share on <Icon type="x" size={13}/></a>
+                </div>
+              </div>
+            </article>
+          ))}
+        </section>
+
+        <section className="ideas" id="ideas">
+          <h2 className="h2">Coming next</h2>
+          <p className="ideas-sub">Bounty ideas we’re lining up. New ones go live as the pool fills.</p>
+          <ul className="idea-grid">
+            {bountyIdeas.map(i => <li key={i.title}><Icon type="lock" size={16}/><div><h3>{i.title}</h3><p>{i.blurb}</p></div></li>)}
+          </ul>
         </section>
 
         <section className="how" id="how">
@@ -204,6 +204,7 @@ export default function Missions() {
           <div className="modal-body">
             <p className="label">Bounty #{modal.mission.id} · submit a clip</p>
             <h2 id="modal-title">{modal.mission.title}</h2>
+            <p className="note">Reward: {modal.mission.reward}. First clip that passes review wins.</p>
             <form onSubmit={e => { e.preventDefault(); exportProof(modal.mission); }}>
               <label>Your Solana wallet<input value={wallet} onChange={e => setWallet(e.target.value)} required maxLength={60} placeholder="Wallet holding 2,500,000+ $BOUNTY" autoComplete="off" spellCheck={false}/></label>
               <label>Clip link<input type="url" placeholder="https://…" required value={evidence} onChange={e => setEvidence(e.target.value)} maxLength={2000}/></label>

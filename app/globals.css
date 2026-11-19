@@ -81,30 +81,39 @@ ol,ul{margin:0;padding:0;list-style:none}
 @keyframes shimmer{50%{opacity:.6}}
 
 /* bounty card */
-.bounty{padding:20px var(--pad) 70px;margin-top:-90px;position:relative;z-index:2}
+.bounty{display:grid;gap:22px;padding:20px var(--pad) 60px;margin-top:-90px;position:relative;z-index:2}
 .card{display:grid;grid-template-columns:.8fr 1.2fr;max-width:1100px;margin:0 auto;border-radius:26px;overflow:hidden;background:var(--card);border:1px solid var(--line);box-shadow:0 40px 80px -30px #000,0 0 0 1px #ff2e8822}
-.card-timer{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:34px 20px;background:radial-gradient(120% 90% at 50% 100%,#ff6e3f,#c42d72 45%,#3b0f5e 100%);text-align:center}
-.card-timer .label{color:#fff}
+.card-reward{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:34px 20px;background:radial-gradient(120% 90% at 50% 100%,#ff6e3f,#c42d72 45%,#3b0f5e 100%);text-align:center}
+.card-reward .label{color:#fff}
+.card:nth-child(2) .card-reward{background:radial-gradient(120% 90% at 50% 100%,#1fd6c8,#2a5fa8 45%,#25104f 100%)}
 .wanted-row{display:flex;gap:4px;filter:drop-shadow(2px 2px 0 #000)}
 .wanted-row .star.on path{fill:#fff;stroke:#000;animation:wflash 1s steps(1) infinite}
 .wanted-row .star:nth-child(even) path{animation-delay:.5s}
 @keyframes wflash{50%{fill:#5aa9ff}}
-.timer{font:clamp(64px,7vw,104px)/1 var(--display);color:#fff;text-shadow:3px 3px 0 #000;font-variant-numeric:tabular-nums}
+.amount{font:clamp(64px,7vw,104px)/1 var(--display);color:#fff;text-shadow:3px 3px 0 #000;margin-top:6px}
 .card-body{padding:clamp(24px,3vw,40px)}
 .card-body h2{font:clamp(40px,4.4vw,64px)/.92 var(--display);text-transform:uppercase;margin:12px 0}
 .card-body>p{color:var(--text-2);margin-bottom:18px}
 .rules{display:grid;gap:8px;margin-bottom:24px}
 .rules li{display:flex;gap:12px;font-size:15px;padding:10px 14px;border-radius:12px;background:#ffffff08}
 .rules b{flex-shrink:0;width:64px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--pink);padding-top:3px}
-.rules li:last-child b{color:var(--cash)}
 .card-actions{display:flex;gap:10px;flex-wrap:wrap}
-.next{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:20px;font-size:14px;color:var(--text-3);text-align:center}
 
 /* stars */
 .stars{display:inline-flex;align-items:center;gap:2px}
 .star path{fill:#ffffff22;stroke:#0008}
 .star.on path{fill:var(--sun);stroke:#000}
 .stars em{font-size:12px;font-weight:800;font-style:normal;letter-spacing:.14em;text-transform:uppercase;margin-left:10px;color:var(--text-2)}
+
+/* ideas */
+.ideas{max-width:1100px;margin:0 auto;padding:40px var(--pad) 20px}
+.ideas .h2{margin-bottom:10px}
+.ideas-sub{color:var(--text-2);margin-bottom:24px}
+.idea-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.idea-grid li{display:flex;gap:12px;align-items:flex-start;padding:18px;border-radius:18px;background:var(--card);border:1px dashed var(--line)}
+.idea-grid svg{flex-shrink:0;margin-top:3px;color:var(--sun)}
+.idea-grid h3{font-size:17px;font-weight:800;margin-bottom:2px}
+.idea-grid p{font-size:14px;color:var(--text-2)}
 
 /* how */
 .how,.faq{max-width:1100px;margin:0 auto;padding:60px var(--pad)}
@@ -159,7 +168,7 @@ dialog::backdrop{background:#0b0614d9;backdrop-filter:blur(6px)}
   .hero-copy{padding:36px var(--pad) 26px;max-width:none}
   .bounty{margin-top:0;padding-top:10px}
   .card{grid-template-columns:1fr}
-  .steps{grid-template-columns:1fr}
+  .steps,.idea-grid{grid-template-columns:1fr}
 }
 @media(max-width:560px){
   .hero h1{font-size:clamp(56px,16vw,84px)}
