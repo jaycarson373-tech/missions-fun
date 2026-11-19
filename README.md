@@ -12,11 +12,6 @@ Run: `npm ci`, `npm run dev`. Check: `npm test`, `npm run build`.
 
 ## Submissions setup (Vercel)
 
-Submissions are public and reviewed by hand. They need two things in Vercel:
+One step: Vercel → this project → **Storage** → **Create Database** → **Upstash for Redis** (free) → **Connect** to this project, then redeploy. That sets `KV_REST_API_URL` and `KV_REST_API_TOKEN`; submissions open automatically.
 
-1. **Storage:** Vercel → Storage (or Marketplace) → **Upstash for Redis** → create a free database and connect it to this project. That sets `KV_REST_API_URL` and `KV_REST_API_TOKEN` automatically.
-2. **Admin token:** Vercel → Settings → Environment Variables → add `ADMIN_TOKEN` with a long random value (16+ characters). Keep it private.
-
-Redeploy after adding them. Until storage is connected, the site shows "Submissions open at launch" and the form does not accept entries.
-
-Review at `/admin`: paste the admin token, set each entry to Pending review / Approved / Rejected / Paid, add a public note, and paste the payout transaction signature when marking Paid. The public board on the home page updates automatically.
+Review at `/admin`. The password is the `KV_REST_API_TOKEN` value (Vercel → Storage → the database → `.env.local` tab). Optionally set a separate `ADMIN_TOKEN` (16+ characters) to use instead. Set each entry to Pending review / Approved / Rejected / Paid, add a public note, and paste the payout transaction signature when marking Paid.

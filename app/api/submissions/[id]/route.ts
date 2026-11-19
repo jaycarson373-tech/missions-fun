@@ -7,16 +7,20 @@ export const dynamic = 'force-dynamic';
 const json = (body: unknown, status = 200) => NextResponse.json(body, {status, headers: {'Cache-Control': 'no-store'}});
 const digest = (s: string) => createHash('sha256').update(s).digest();
 
+// The review password is ADMIN_TOKEN if set, otherwise the storage token Vercel creates
+// when Upstash is connected (Vercel → Storage → the database → .env.local tab → KV_REST_API_TOKEN).
+const reviewPassword = () => process.env.ADMIN_TOKEN || process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || '';
+
 function isAdmin(req: Request) {
-  const want = process.env.ADMIN_TOKEN || '';
+  const want = reviewPassword();
   const got = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   if (want.length < 16 || !got) return false;
   return timingSafeEqual(digest(want), digest(got));
 }
 
-// Manual review: only the admin token can change a submission's status.
+// Manual review: only the review password can change a submission's status.
 export async function PATCH(req: Request, {params}: {params: Promise<{id: string}>}) {
-  if (!process.env.ADMIN_TOKEN) return json({error: 'Review is not set up. Add ADMIN_TOKEN in Vercel.'}, 503);
+  if (!reviewPassword()) return json({error: 'Connect Upstash storage in Vercel first.'}, 503);
   if (!isAdmin(req)) return json({error: 'Not allowed.'}, 401);
   if (!storeReady()) return json({error: 'Storage is not connected.'}, 503);
   const {id} = await params;

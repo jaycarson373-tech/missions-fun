@@ -2,7 +2,7 @@
 import {useCallback, useEffect, useState} from 'react';
 import {STATUSES, statusLabel, shortWallet, type Status, type Submission} from '@/lib/submissions';
 
-// Private review page. Only works with the ADMIN_TOKEN set in Vercel; the token stays in this browser tab.
+// Private review page. The password is the storage token from Vercel; it stays in this browser tab.
 export default function Admin() {
   const [token, setToken] = useState('');
   const [subs, setSubs] = useState<Submission[]>([]);
@@ -33,7 +33,7 @@ export default function Admin() {
   return (
     <main className="admin">
       <h1>Review submissions</h1>
-      <label>Admin token<input type="password" value={token} onChange={e => setToken(e.target.value)} autoComplete="off" placeholder="ADMIN_TOKEN from Vercel"/></label>
+      <label>Review password<input type="password" value={token} onChange={e => setToken(e.target.value)} autoComplete="off" placeholder="KV_REST_API_TOKEN from Vercel → Storage"/></label>
       {msg && <p className="admin-msg" role="status">{msg}</p>}
       <p className="admin-count">{subs.length} submissions · {subs.filter(s => s.status === 'pending').length} pending</p>
       <ul>
