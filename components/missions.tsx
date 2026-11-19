@@ -24,6 +24,70 @@ const faq = [
   ['Is this made by Rockstar?', 'No. BOUNTY is an independent community project with original artwork, not affiliated with Rockstar Games or Take-Two.'],
 ];
 
+type Slide = {kind: 'live'; m: Mission} | {kind: 'locked'; n: number};
+const slides: Slide[] = [...liveBounties.map(m => ({kind: 'live' as const, m})), {kind: 'locked', n: liveBounties.length + 1}, {kind: 'locked', n: liveBounties.length + 2}];
+
+function HeroDeck({onSubmit}: {onSubmit: (m: Mission) => void}) {
+  const rail = useRef<HTMLDivElement>(null);
+  const [i, setI] = useState(0);
+  const [hold, setHold] = useState(false);
+  const go = (k: number) => {
+    const el = rail.current;
+    if (!el) return;
+    const n = (k + slides.length) % slides.length;
+    el.scrollTo({left: n * el.clientWidth, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+  };
+  useEffect(() => {
+    const el = rail.current;
+    if (!el) return;
+    const on = () => setI(Math.round(el.scrollLeft / Math.max(1, el.clientWidth)));
+    el.addEventListener('scroll', on, {passive: true});
+    return () => el.removeEventListener('scroll', on);
+  }, []);
+  useEffect(() => {
+    if (hold || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t = setTimeout(() => go(i + 1), 5000);
+    return () => clearTimeout(t);
+  }, [i, hold]);
+  return (
+    <div className="deck" onMouseEnter={() => setHold(true)} onMouseLeave={() => setHold(false)} onTouchStart={() => setHold(true)} onFocusCapture={() => setHold(true)}>
+      <div className="rail" ref={rail} role="region" aria-roledescription="carousel" aria-label="Bounties">
+        {slides.map((s, k) => (
+          <div className="slide" key={k} role="group" aria-roledescription="slide" aria-label={`${k + 1} of ${slides.length}`}>
+            {s.kind === 'live' ? (
+              <article className="deck-card">
+                <div className="deck-top"><span className="badge-live"><span className="live-dot"/>Live · #{s.m.id}</span><Stars n={s.m.difficulty} size={14}/></div>
+                <span className="wanted-row" aria-label={`${s.m.wanted}-star wanted level`}>{Array.from({length: s.m.wanted}, (_, j) => <Star key={j} size={30}/>)}</span>
+                <h3>{s.m.title}</h3>
+                <p>{s.m.description}</p>
+                <div className="deck-reward"><span>Reward</span><b>{s.m.reward}</b></div>
+                <div className="deck-actions">
+                  <button className="btn btn-pink" onClick={() => onSubmit(s.m)}>Submit clip</button>
+                  <a className="chip" href={`#bounty-${s.m.id}`}>Rules</a>
+                </div>
+              </article>
+            ) : (
+              <article className="deck-card locked">
+                <div className="deck-top"><span className="badge-lock"><Icon type="lock" size={13}/>Bounty #00{s.n}</span></div>
+                <b className="q">???</b>
+                <p className="redact" aria-hidden="true"><i/><i/><i/></p>
+                <div className="deck-reward"><span>Reward</span><b>??? SOL</b></div>
+                <p className="deck-note">Classified. Drops when the pool fills.</p>
+              </article>
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="deck-nav">
+        <button aria-label="Previous bounty" onClick={() => go(i - 1)}><Icon type="left" size={18}/></button>
+        <div className="dots">{slides.map((_, k) => <button key={k} className={k === i ? 'on' : ''} aria-label={`Go to slide ${k + 1}`} aria-current={k === i} onClick={() => go(k)}/>)}</div>
+        <button aria-label="Next bounty" onClick={() => go(i + 1)}><Icon size={18}/></button>
+      </div>
+      <p className="swipe-hint">Swipe for more bounties</p>
+    </div>
+  );
+}
+
 export default function Missions() {
   const [modal, setModal] = useState<Modal>(null);
   const [notice, setNotice] = useState('');
@@ -84,11 +148,8 @@ export default function Missions() {
   function exportProof(m: Mission) {
     try {
       const draft = makeProofDraft(m.id, evidence, notes, wallet);
-      const link = URL.createObjectURL(new Blob([JSON.stringify(draft, null, 2)], {type: 'application/json'}));
-      const a = document.createElement('a');
-      a.href = link; a.download = `bounty-${m.id}-submission-draft.json`; a.click();
-      setTimeout(() => URL.revokeObjectURL(link), 1000);
-      setFormError(''); setNotice('Submission draft saved. It has not been sent.'); setModal(null);
+      try { localStorage.setItem(`bounty:submission:${m.id}`, JSON.stringify(draft)); } catch {}
+      setFormError(''); setNotice('Saved on this device. Submissions open at launch.'); setModal(null);
     } catch (e) { setFormError(e instanceof Error ? e.message : 'Please check your submission.'); }
   }
 
@@ -110,7 +171,7 @@ export default function Missions() {
 
       <header className="top">
         <a href="#" className="brand" aria-label="Bounty home"><img src="/logo.jpg" width="40" height="40" alt=""/><span>Bounty</span></a>
-        <nav aria-label="Main navigation"><a href="#bounty">Bounties</a><a href="#next">Next</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+        <nav aria-label="Main navigation"><a href="#bounty">Bounties</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
         <button className="btn btn-pink btn-sm" onClick={() => openSubmit()}>Submit a clip</button>
       </header>
 
@@ -126,11 +187,12 @@ export default function Missions() {
               <a href="#how" className="btn btn-ghost">How it works</a>
             </div>
           </div>
+          <HeroDeck onSubmit={openSubmit}/>
         </section>
 
         <section className="bounty" id="bounty">
           {liveBounties.map(m => (
-            <article className="card" key={m.id}>
+            <article className="card" key={m.id} id={`bounty-${m.id}`}>
               <div className="card-reward">
                 <span className="label"><span className="live-dot"/>Live · Bounty #{m.id}</span>
                 <span className="wanted-row" aria-label={`${m.wanted}-star wanted level`}>{Array.from({length: m.wanted}, (_, i) => <Star key={i} size={26}/>)}</span>
@@ -144,31 +206,17 @@ export default function Missions() {
                 <p>{m.description}</p>
                 <ul className="rules">
                   <li><b>Fail if</b>{m.rules.fail}</li>
-                  {m.proof.slice(1).map(p => <li key={p}><b>Clip</b>{p}</li>)}
+                  <li><b>Starts</b>{m.proof[1]}</li>
+                  <li><b>Ends</b>{m.proof[2]}</li>
                 </ul>
                 <div className="card-actions">
                   <button className="btn btn-pink" onClick={() => openSubmit(m)}>Submit your clip <Icon type="clip" size={18}/></button>
                   <button className="chip" onClick={() => copyLink(m)}>Copy link</button>
-                  <a className="chip" href={shareHref(m)} target="_blank" rel="noopener noreferrer">Share on <Icon type="x" size={13}/></a>
+                  <a className="chip" href={shareHref(m)} target="_blank" rel="noopener noreferrer">Share on <Icon type="xlogo" size={13}/></a>
                 </div>
               </div>
             </article>
           ))}
-        </section>
-
-        <section className="ideas" id="next">
-          <h2 className="h2">Next bounties</h2>
-          <p className="ideas-sub">Classified until they drop. New bounties go live when the pool fills.</p>
-          <div className="mystery-grid">
-            {[3, 4].map(n => (
-              <div className="mystery" key={n}>
-                <span className="label"><Icon type="lock" size={14}/>Bounty #00{n}</span>
-                <b className="q">???</b>
-                <span className="redact" aria-hidden="true"><i/><i/></span>
-                <span className="label">Reward ??? · drops when the pool fills</span>
-              </div>
-            ))}
-          </div>
         </section>
 
         <section className="how" id="how">
@@ -182,7 +230,7 @@ export default function Missions() {
             ))}
           </ol>
           <p className="fees">Fees fill the pool <Icon size={14}/> a new bounty posts when it’s full. <b>No team supply.</b></p>
-          <button className="link-btn" onClick={() => setModal({type: 'eligibility'})}>Check if an amount is 2.5M+</button>
+          <button className="link-btn" onClick={() => setModal({type: 'eligibility'})}>Not sure you hold enough? Check an amount</button>
         </section>
 
         <section className="faq" id="faq">
@@ -218,8 +266,8 @@ export default function Missions() {
               <label>Clip link<input type="url" placeholder="https://…" required value={evidence} onChange={e => setEvidence(e.target.value)} maxLength={2000}/></label>
               <label>What does it show?<textarea rows={3} required minLength={20} maxLength={2000} value={notes} onChange={e => setNotes(e.target.value)} placeholder="When the timer starts and ends, anything a reviewer should look for…"/></label>
               {formError && <p className="error" role="alert">{formError}</p>}
-              <button type="submit" className="btn btn-pink">Save submission <Icon type="download" size={18}/></button>
-              <p className="note">Submissions open at launch. For now this saves a draft on your device. Nothing is sent or checked.</p>
+              <button type="submit" className="btn btn-pink">Save for launch</button>
+              <p className="note">Submissions open at launch. Until then your entry is saved on this device only. Nothing is sent or checked yet.</p>
             </form>
           </div>
         ) : modal?.type === 'eligibility' ? (

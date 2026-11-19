@@ -8,6 +8,8 @@ export function Icon({type = 'arrow', size = 20}: {type?: string; size?: number}
         : type === 'plus' ? <path d="M12 4v16M4 12h16"/>
         : type === 'download' ? <path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/>
         : type === 'x' ? <path d="M4 4l16 16M20 4 4 20" strokeWidth="2.4"/>
+        : type === 'xlogo' ? <path d="M17.8 3h3.1l-6.8 7.8L22 21h-6.2l-4.9-6.4L5.3 21H2.2l7.3-8.3L2 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.4 4.7H5.6z" fill="currentColor" stroke="none"/>
+        : type === 'left' ? <path d="M20 12H5m6-6-6 6 6 6"/>
         : type === 'lock' ? <><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></>
         : type === 'wallet' ? <><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4z"/><path d="M4 7V6a2 2 0 0 1 2-2h10v3M16 13.5h.01"/></>
         : type === 'clip' ? <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z" fill="currentColor"/></>
@@ -130,8 +132,8 @@ export function Scene({className = ''}: {className?: string}) {
         })}
       </g>
 
-      <path className="searchlight" d="M1348 186 L1100 694 L1300 694 Z" fill="url(#spot)"/>
-      <g transform="translate(1300 170)" className="heli"><Helicopter/></g>
+      <path className="searchlight" d="M788 166 L640 694 L900 694 Z" fill="url(#spot)"/>
+      <g transform="translate(740 150)" className="heli"><Helicopter/></g>
 
       {/* causeway */}
       <g fill={INK}>
@@ -145,8 +147,8 @@ export function Scene({className = ''}: {className?: string}) {
         {Array.from({length: 8}, (_, i) => <rect key={i} x={i * 230 + 84} y="790" width="12" height="60" rx="6" fill="#ffd6a0" filter="url(#blur8)"/>)}
       </g>
 
-      <g transform="translate(790 690)"><PoliceCar/></g>
-      <g transform="translate(1120 690)"><SportsCar/></g>
+      <g transform="translate(575 690)"><PoliceCar/></g>
+      <g transform="translate(830 690)"><SportsCar/></g>
 
       {/* foreground shore */}
       <path d="M0 900 V840 Q200 812 420 836 T860 846 Q1180 820 1600 842 V900Z" fill="#07040d"/>

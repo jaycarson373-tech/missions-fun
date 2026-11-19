@@ -13,11 +13,11 @@ export type Mission = {
 export const missions: Mission[] = [
   {id: '001', title: 'Six stars. Five minutes.', status: 'live', reward: '1 SOL', wanted: 6, difficulty: 5,
     description: 'Hit six stars, the highest wanted level in GTA VI, and stay alive for five straight minutes. No dying, no getting busted.',
-    proof: ['One continuous clip, no cuts or pauses', 'Starts before the sixth star appears', 'Runs at least five minutes after it, with the wanted level visible'],
+    proof: ['One continuous clip, no cuts or pauses', 'Before the sixth star appears', 'Five minutes after it, still alive at six stars'],
     rules: {vehicle: 'Anything', limit: '5:00 at six stars', fail: 'You die, get busted, or the clip cuts'}},
   {id: '002', title: 'Lose the heat.', status: 'live', reward: '0.5 SOL', wanted: 3, difficulty: 3,
     description: 'Steal a police car and lose the cops without ever getting out. Get to at least three stars first.',
-    proof: ['One continuous clip, no cuts or pauses', 'Shows you taking the police car', 'Runs until the wanted level fully clears'],
+    proof: ['One continuous clip, no cuts or pauses', 'When you take the police car', 'When the wanted level fully clears'],
     rules: {vehicle: 'The police car you steal', limit: 'Until the wanted level clears', fail: 'You leave the car, it’s destroyed, or the clip cuts'}},
 ];
 
