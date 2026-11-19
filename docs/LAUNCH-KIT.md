@@ -14,4 +14,4 @@ GTA players already invent their own challenges. BOUNTY gives each one a clear b
 The current 2.55M-token eligibility requirement is retained. Gameplay mechanics must be verified before publishing funded challenges. No official Rockstar or Take-Two affiliation.
 
 ## Brand
-Original orange B/viewfinder mark, warm paper board and dark route illustration. Local Inter OFL retained. SVG and PNG logo, favicon and bounty-banner.png provided. No paid graphics generation or new dependencies.
+Original orange B/viewfinder mark on a night board: near-black base, hot orange, amber difficulty stars, bone-white wanted-poster cards and a paper creator section. Self-hosted Anton (OFL) for display type and Inter (OFL) for text. SVG and PNG logo, favicon and bounty-banner.png provided. No paid graphics generation or new dependencies.
