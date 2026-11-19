@@ -198,11 +198,11 @@ export default function Missions() {
               <a href="#how" className="btn btn-ghost">How it works</a>
             </div>
             <ol className="mini-steps" aria-label="How a bounty works">
-              <li><span className="mini-ico"><Icon type="target" size={20}/></span>Pick a bounty</li>
+              <li><span className="mini-ico"><Icon type="target" size={20}/></span>Complete a bounty</li>
               <li aria-hidden="true" className="mini-arrow"><Icon size={16}/></li>
-              <li><span className="mini-ico"><Icon type="cam" size={20}/></span>Clip it in one take</li>
+              <li><span className="mini-ico"><Icon type="cam" size={20}/></span>Clip and post proof</li>
               <li aria-hidden="true" className="mini-arrow"><Icon size={16}/></li>
-              <li><span className="mini-ico"><Icon type="cash" size={20}/></span>First clip that passes gets paid</li>
+              <li><span className="mini-ico"><Icon type="cash" size={20}/></span>Get paid</li>
             </ol>
           </div>
           <HeroDeck onSubmit={openSubmit}/>
