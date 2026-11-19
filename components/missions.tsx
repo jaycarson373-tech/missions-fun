@@ -16,9 +16,9 @@ const ticker = [
 ];
 
 const steps = [
-  {icon: 'wallet', t: 'Hold 2.55M+', b: 'Keep at least 2,550,000 $BOUNTY in your Solana wallet. That is what makes you eligible.'},
+  {icon: 'wallet', t: 'Hold 2.5M+', b: 'Keep at least 2,500,000 $BOUNTY in your Solana wallet. That is what makes you eligible.'},
   {icon: 'clip', t: 'Pull it off', b: 'Do the live bounty in GTA VI and record it in one continuous clip, HUD on, no cuts.'},
-  {icon: 'check', t: 'Submit with your wallet', b: 'Send the clip link with your wallet address. The clip is checked against the rules and your wallet against the 2.55M minimum.'},
+  {icon: 'check', t: 'Submit with your wallet', b: 'Send the clip link with your wallet address. The clip is checked against the rules and your wallet against the 2.5M minimum.'},
   {icon: 'coin', t: 'Get the bounty', b: 'Pass and the reward is paid in Take-Two from the bounty pool. Then the next bounty goes up.'},
 ];
 
@@ -30,8 +30,8 @@ const loop = [
 ];
 
 const faq = [
-  ['How do I win a bounty?', 'Do the live bounty in GTA VI, record one uncut clip and submit it with your wallet. If the clip meets every rule and your wallet holds 2,550,000 $BOUNTY or more, you get the reward.'],
-  ['Why do I need 2.55M tokens?', 'Only wallets holding at least 2,550,000 $BOUNTY can submit. The calculator on this page is an estimate only. The real check happens against your wallet when submissions open.'],
+  ['How do I win a bounty?', 'Do the live bounty in GTA VI, record one uncut clip and submit it with your wallet. If the clip meets every rule and your wallet holds 2,500,000 $BOUNTY or more, you get the reward.'],
+  ['Why do I need 2.5M tokens?', 'Only wallets holding at least 2,500,000 $BOUNTY can submit. The calculator on this page is an estimate only. The real check happens against your wallet when submissions open.'],
   ['Where does the reward come from?', 'Creator fees from $BOUNTY trading fill the bounty pool, and the pool holds Take-Two. Rewards are paid from it. Everything is subject to platform rules and legal review, and payouts are not live in this preview.'],
   ['When does the next bounty drop?', 'Bounties go up one at a time. Once the pool has enough in it to fund the next one, it is posted here.'],
   ['Is there a team supply?', 'No. There is no team token allocation.'],
@@ -72,7 +72,7 @@ function Phone() {
         <div className="notifs">
           <div className="notif n1"><img src="/mark.svg" width="34" height="34" alt=""/><div><b>BOUNTY · now</b><p>New bounty posted: <strong>{live.title}</strong></p></div></div>
           <div className="notif n2"><span className="notif-ico c-teal"><Icon type="coin" size={20}/></span><div><b>Pool · 2m</b><p>Fees are filling the pool. Next bounty posts when it can fund one.</p></div></div>
-          <div className="notif n3"><span className="notif-ico c-sun"><Icon type="clip" size={20}/></span><div><b>Reminder</b><p>One clip. No cuts. Wallet needs 2.55M+.</p></div></div>
+          <div className="notif n3"><span className="notif-ico c-sun"><Icon type="clip" size={20}/></span><div><b>Reminder</b><p>One clip. No cuts. Wallet needs 2.5M+.</p></div></div>
         </div>
       </div>
     </div>
@@ -153,7 +153,7 @@ export default function Missions() {
     try {
       const r = calculateEligibility(amount);
       setEstimate(r.meetsThreshold
-        ? 'That meets the 2,550,000 minimum. This is an estimate, not a wallet check.'
+        ? 'That meets the 2,500,000 minimum. This is an estimate, not a wallet check.'
         : `${(Number(r.shortfall) / 1e6).toLocaleString('en-US')} more tokens needed. This calculator does not check your wallet.`);
     } catch (e) { setEstimate(e instanceof Error ? e.message : 'Check the amount.'); }
   }
@@ -232,7 +232,7 @@ export default function Missions() {
                 <button className="chip" onClick={() => copyLink(live)}>Copy link</button>
                 <a className="chip" href={shareHref} target="_blank" rel="noopener noreferrer">Post on <Icon type="x" size={13}/></a>
               </div>
-              <p className="eligible"><Icon type="wallet" size={16}/>Eligible wallets hold 2,550,000+ $BOUNTY. <button className="link-btn" onClick={() => setModal({type: 'eligibility'})}>Check an amount</button></p>
+              <p className="eligible"><Icon type="wallet" size={16}/>Eligible wallets hold 2,500,000+ $BOUNTY. <button className="link-btn" onClick={() => setModal({type: 'eligibility'})}>Check an amount</button></p>
               </div>
               <div className="fb-side">
               <dl className="rule-sheet">
@@ -299,7 +299,7 @@ export default function Missions() {
           <div className="pool-stats reveal">
             <div><b>0</b><span>team supply</span></div>
             <div><b className="c-pink">1</b><span>bounty live at a time</span></div>
-            <div><b className="c-sun">2.55M+</b><span>to be eligible</span></div>
+            <div><b className="c-sun">2.5M+</b><span>to be eligible</span></div>
             <div><b className="c-teal">TTWO</b><span>what the pool holds</span></div>
           </div>
         </section>
@@ -353,7 +353,7 @@ export default function Missions() {
             <h2 id="modal-title">{modal.mission.title}</h2>
             <ul className="proof-list">{modal.mission.proof.map(p => <li key={p}><Icon type="check" size={17}/>{p}</li>)}</ul>
             <form onSubmit={e => { e.preventDefault(); exportProof(modal.mission); }}>
-              <label>Your Solana wallet<input value={wallet} onChange={e => setWallet(e.target.value)} required maxLength={60} placeholder="The wallet holding 2,550,000+ $BOUNTY" autoComplete="off" spellCheck={false}/></label>
+              <label>Your Solana wallet<input value={wallet} onChange={e => setWallet(e.target.value)} required maxLength={60} placeholder="The wallet holding 2,500,000+ $BOUNTY" autoComplete="off" spellCheck={false}/></label>
               <label>Clip link<input type="url" placeholder="https://…" required value={evidence} onChange={e => setEvidence(e.target.value)} maxLength={2000}/></label>
               <label>What does the clip show?<textarea rows={3} required minLength={20} maxLength={2000} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Timestamps, when the timer starts and ends, anything a reviewer should look for…"/></label>
               {formError && <p className="error" role="alert">{formError}</p>}
@@ -364,12 +364,12 @@ export default function Missions() {
         ) : modal?.type === 'eligibility' ? (
           <div className="modal-body access">
             <p className="kicker">Eligibility</p>
-            <h2 id="modal-title">2,550,000+ <span className="vice-text">$BOUNTY</span></h2>
-            <p className="modal-lede">Your wallet needs at least 2.55 million tokens to submit a clip.</p>
+            <h2 id="modal-title">2,500,000+ <span className="vice-text">$BOUNTY</span></h2>
+            <p className="modal-lede">Your wallet needs at least 2.5 million tokens to submit a clip.</p>
             <dl className="rule-sheet one"><div><dt>Token mint</dt><dd>Published at launch</dd></div></dl>
             <p className="note">Calculator only. No wallet is connected or checked.</p>
             <form className="calc" onSubmit={e => { e.preventDefault(); checkAmount(); }}>
-              <label>Token amount<input inputMode="decimal" value={amount} onChange={e => { setAmount(e.target.value); setEstimate(''); }} placeholder="2550000" required maxLength={40}/></label>
+              <label>Token amount<input inputMode="decimal" value={amount} onChange={e => { setAmount(e.target.value); setEstimate(''); }} placeholder="2500000" required maxLength={40}/></label>
               <button className="btn btn-pink" type="submit">Check <Icon size={18}/></button>
             </form>
             {estimate && <p className="estimate" role="status">{estimate}</p>}

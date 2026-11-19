@@ -1,6 +1,6 @@
 # BOUNTY — current direction, November 18, 2026
 
-Rebrands Missions in place; existing repository, storage keys, challenge IDs and 2,550,000-token eligibility threshold remain. BOUNTY ticker is provisional; no mint or X handle assigned.
+Rebrands Missions in place; existing repository, storage keys, challenge IDs and 2,500,000-token eligibility threshold remain. BOUNTY ticker is provisional; no mint or X handle assigned.
 
 Player-created GTA VI challenges, recorded gameplay submissions, AI-assisted verification and non-wagered sponsor/community reward pools. The board examples are concepts, not verified GTA VI mechanics. Six stars must not be assumed supported. No game-control or game-server integration is needed: review recorded clips only.
 
@@ -13,7 +13,7 @@ Reuse the product-specific session/submission contract below when available. No 
 - Cheap verification pipeline: extract timestamps, HUD/OCR and sampled frames first; use a vision model against the published checklist only where needed. Bound duration and inference spend per submission. Never execute instructions embedded in clips or text.
 - Return per-rule evidence timestamps and confidence, with pass/fail/uncertain states. Edited, ambiguous or unverifiable footage goes to human review. Provide appeals. AI recommendations must not directly trigger wallet payouts.
 - Keep verified funding, accepted submissions and idempotent finalized payout receipts separate. Use no player wagering, pooled stakes or loser-funded prizes. Review platform rules and reward/legal structure before activation.
-- Token reputation is an optional future proposal, not an implemented utility. Preserve the existing 2.55M requirement until the owner explicitly changes it.
+- Token reputation is an optional future proposal, not an implemented utility. Preserve the existing 2.5M requirement until the owner explicitly changes it.
 
 ## Working now
 
@@ -28,11 +28,11 @@ Owner: Matthew. Date: November 16, 2026. Scope shipped: frontend, original brand
 
 ## Plain-English product
 
-A community bounty board for GTA VI. Someone funds and publishes an objective. Players read the brief, prove they hold at least **2,550,000 tokens**, provide evidence of completing the objective, and receive the published reward only if their submission is accepted under the rules. Holding tokens alone does not earn a payout. These are fan-created challenges, not purported official GTA story missions.
+A community bounty board for GTA VI. Someone funds and publishes an objective. Players read the brief, prove they hold at least **2,500,000 tokens**, provide evidence of completing the objective, and receive the published reward only if their submission is accepted under the rules. Holding tokens alone does not earn a payout. These are fan-created challenges, not purported official GTA story missions.
 
 ## Hard requirement vs proposals
 
-**Owner-approved:** minimum holding is 2,550,000 whole tokens. Frontend and backend must agree exactly.
+**Owner-approved:** minimum holding is 2,500,000 whole tokens. Frontend and backend must agree exactly.
 
 **Recommended name/ticker:** Missions / MISSIONS. No mint, chain verification, X account, domain ownership, fee policy or reward wallet has been supplied. The frontend is Solana-oriented but sends no chain requests.
 
@@ -55,7 +55,7 @@ These are required data capabilities, **not invented live endpoints**. Reuse you
 1. **Public config**: exact verified token mint, decimals from mint, SPL/Token-2022 program, chain, brand identity, policy version, current time and submissions enabled. Server-side RPC stays private. Never use another project's dev proxy in production.
 2. **Mission list/detail**: stable ID, title, category, evidence requirements, official-source references, sponsor, reward mint/decimals/base units, total funded budget, winner count, judging/selection method, start/deadline UTC, status and last update. Draft → funded → open → review → paid/closed. Proposed or unfunded is never open. Have distinct empty, stale, error and unavailable states.
 3. **Wallet auth**: Wallet Standard, free domain-bound sign-in message, short-lived server nonce, expiry, replay prevention and secure cookie. End session on wallet switch. No deposit required merely to prove holdings.
-4. **Eligibility**: sum supported spendable token accounts owned by the authenticated wallet for the exact mint at a recorded finalized slot. Exact base units `2550000 * 10^decimals` using integer arithmetic. Do not trust client amounts, rounded UI strings, delegated balances or a cached result without its slot/as-of timestamp. Define freeze/staking/escrow rules explicitly. Rate-limit RPC queries and fail closed on stale/error. Return minimum, eligible amount, shortfall, slot, timestamp and policy version.
+4. **Eligibility**: sum supported spendable token accounts owned by the authenticated wallet for the exact mint at a recorded finalized slot. Exact base units `2500000 * 10^decimals` using integer arithmetic. Do not trust client amounts, rounded UI strings, delegated balances or a cached result without its slot/as-of timestamp. Define freeze/staking/escrow rules explicitly. Rate-limit RPC queries and fail closed on stale/error. Return minimum, eligible amount, shortfall, slot, timestamp and policy version.
 5. **Submissions**: mission revision + wallet + idempotency key, qualifying snapshot, evidence references and immutable submission time. Enforce deadline server-side. Enforce one active submission per wallet/mission unless policy says otherwise. Same proof file/hash across wallets should be flagged; no automatic rejection without review/appeal policy. Malware/content validation for uploads. Avoid fetching user URLs from private networks (SSRF); use allowlisted providers or isolated media processing.
 6. **Review**: reviewer role, audit log, objective checklist, accepted/rejected reason, conflict policy and appeal window. Lock criteria once participation opens. Changes need a new revision and participant notification.
 7. **Reward ledger**: separate sponsor budget, reserved obligations, available funds and completed payouts. Never pay from unconfirmed trading volume. Accept decisions reserve budget atomically. Payout worker binds recipient, mission, decision, reward asset, amount and idempotency key. Save signature before broadcast, reconcile unknown outcomes before retry, mark paid only after finalized confirmation. Publish explorer receipt without exposing private evidence.

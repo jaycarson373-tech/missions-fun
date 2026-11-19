@@ -1,4 +1,4 @@
-export const REQUIRED_TOKENS = 2_550_000n;
+export const REQUIRED_TOKENS = 2_500_000n;
 export const MAX_STARS = 5;
 export const difficultyLabel = {1: 'Warm-up', 2: 'Easy', 3: 'Skilled', 4: 'Hard', 5: 'Elite'} as const;
 

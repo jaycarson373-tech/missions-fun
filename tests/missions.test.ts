@@ -8,16 +8,16 @@ import {
 const WALLET = 'So11111111111111111111111111111111111111112';
 const NOTES = 'An original clip with the wanted level and timer visible start to finish.';
 
-test('2.55M boundary is exact; estimate never claims verification', () => {
-  assert.equal(calculateEligibility('2549999.999999').meetsThreshold, false);
-  assert.equal(calculateEligibility('2550000').meetsThreshold, true);
-  assert.equal(calculateEligibility('2550000.000001').meetsThreshold, true);
-  assert.equal(calculateEligibility('2550000').verified, false);
-  assert.equal(calculateEligibility('2549999.999999').shortfall, 1n);
+test('2.5M boundary is exact; estimate never claims verification', () => {
+  assert.equal(calculateEligibility('2499999.999999').meetsThreshold, false);
+  assert.equal(calculateEligibility('2500000').meetsThreshold, true);
+  assert.equal(calculateEligibility('2500000.000001').meetsThreshold, true);
+  assert.equal(calculateEligibility('2500000').verified, false);
+  assert.equal(calculateEligibility('2499999.999999').shortfall, 1n);
 });
 
 test('unsafe/ambiguous amounts rejected', () => {
-  for (const v of ['-1', '2.55e6', 'NaN', 'Infinity', '2,550,000', '0.0000001', '']) assert.throws(() => parseTokenAmount(v));
+  for (const v of ['-1', '2.5e6', 'NaN', 'Infinity', '2,500,000', '0.0000001', '']) assert.throws(() => parseTokenAmount(v));
 });
 
 test('proof export cannot become a payout or submission', () => {
@@ -27,7 +27,7 @@ test('proof export cannot become a payout or submission', () => {
   assert.equal(d.tokenMint, null);
   assert.equal(d.payment, null);
   assert.equal(d.wallet, WALLET);
-  assert.equal(d.requiredTokens, '2550000');
+  assert.equal(d.requiredTokens, '2500000');
 });
 
 test('proof validation rejects queued bounties, bad wallets, credentials and executable links', () => {
