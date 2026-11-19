@@ -1,6 +1,7 @@
 'use client';
 import {useEffect, useState} from 'react';
-import {Icon, MissionArt} from './art';
+import {Icon} from './art';
+import {Poster} from './poster';
 import {briefChecks, REQUIRED_TOKENS} from '@/lib/missions';
 
 const empty = {title: '', objective: '', evidence: '', rewardNotes: ''};
@@ -48,52 +49,50 @@ export default function ChallengeDraft() {
   }
 
   return (
-    <section className="creator" id="create">
-      <div className="creator-intro">
-        <p className="kicker">For challenge creators</p>
-        <h2>Think someone<br/>can pull it off?</h2>
-        <p className="lede">Write the challenge. Define what counts. Plan a community-funded reward with no entry bets.</p>
-        <div className="draft-preview" aria-live="polite">
-          <span className="preview-label">Live preview</span>
-          <article className="card">
-            <div className="card-art"><MissionArt kind="file" color="#ff5a1f"/><span className="card-no">Draft</span></div>
-            <div className="card-body">
-              <div className="card-top"><span className="tag">Your challenge</span></div>
-              <h3>{draft.title.trim() || 'Name your challenge.'}</h3>
-              <p>{draft.objective.trim() || 'Say exactly what the player must do, with what, and how fast.'}</p>
-              <div className="card-foot"><span className="status">Local draft · not published</span></div>
-            </div>
-          </article>
-        </div>
+    <section className="editor" id="create">
+      <div className="head reveal">
+        <p className="kicker">Mission editor</p>
+        <h2 className="h-big">Make your<br/><span className="vice-text">own bounty.</span></h2>
+        <p className="sub">Write the challenge, set what counts, watch the poster build itself. Drafts stay on your device.</p>
       </div>
 
-      <div className="creator-work">
-        <form onSubmit={save}>
-          <label>Challenge title<input value={draft.title} onChange={set('title')} required maxLength={100} placeholder="Escape in a stolen police car"/></label>
-          <label>What must the player do?<textarea value={draft.objective} onChange={set('objective')} required minLength={20} maxLength={2000} rows={3} placeholder="Objective, time limit, permitted vehicles and what counts as a fail."/></label>
-          <label>What must the clip show?<textarea value={draft.evidence} onChange={set('evidence')} required minLength={20} maxLength={2000} rows={3} placeholder="Continuous footage, visible HUD, start and finish."/></label>
+      <div className="editor-grid">
+        <form className="panel beam reveal" onSubmit={save}>
+          <label>Challenge title<input value={draft.title} onChange={set('title')} required maxLength={100} placeholder="Six stars, five minutes, no deaths"/></label>
+          <label>What must the player do?<textarea value={draft.objective} onChange={set('objective')} required minLength={20} maxLength={2000} rows={3} placeholder="Objective, time limit, vehicle and what counts as a fail."/></label>
+          <label>What must the clip show?<textarea value={draft.evidence} onChange={set('evidence')} required minLength={20} maxLength={2000} rows={3} placeholder="One continuous clip, HUD and timer visible, start to finish."/></label>
           <label>Reward plan <small>(optional)</small><input value={draft.rewardNotes} onChange={set('rewardNotes')} maxLength={300} placeholder="Sponsor or community pool; no player wagers"/></label>
           <div className="draft-actions">
-            <button className="btn btn-hot" type="submit">Save challenge draft <Icon type="download"/></button>
-            {touched && <button type="button" className="link-btn" onClick={() => { setDraft(empty); setStatus('Draft cleared from this device.'); }}>Clear draft</button>}
+            <button className="btn btn-pink shimmer" type="submit">Save draft <Icon type="download" size={18}/></button>
+            {touched && <button type="button" className="link-btn" onClick={() => { setDraft(empty); setStatus('Draft cleared from this device.'); }}>Clear</button>}
           </div>
-          {status && <p role="status" className="muted">{status}</p>}
-          <p className="muted">Saved on this device only. Publishing, funding and AI clip review are not active yet.</p>
+          {status && <p role="status" className="note">{status}</p>}
+          <p className="note">Saved on this device only. Publishing, funding and AI clip review are not live yet.</p>
         </form>
 
-        <div className="strength">
-          <div className="sub-head"><h3>Brief strength</h3><span className="score">{score}/{checks.length}</span></div>
-          <div className="meter" role="meter" aria-label="Brief strength" aria-valuemin={0} aria-valuemax={checks.length} aria-valuenow={score}>
-            <i style={{width: `${score / checks.length * 100}%`}}/>
+        <div className="editor-side reveal">
+          <div className="preview" aria-live="polite">
+            <span className="preview-tag">Live preview</span>
+            <Poster
+              no="B-NEW"
+              stars={Math.max(1, Math.round(score / checks.length * 5))}
+              kind="file" color="#ff2e88"
+              title={draft.title.trim() || 'Name your challenge'}
+              body={draft.objective.trim() || 'Say exactly what the player must do, with what, and how fast.'}>
+              <div className="poster-reward"><b>$???</b><span>Draft · not published</span></div>
+            </Poster>
           </div>
-          <ul>
-            {checks.map(c => (
-              <li key={c.id} className={c.ok ? 'ok' : touched ? 'miss' : ''}>
-                <Icon type={c.ok ? 'check' : 'plus'} size={14}/>{c.label}
-              </li>
-            ))}
-          </ul>
-          <p className="muted">A writing aid. A strong brief can be judged from a single clip.</p>
+          <div className="strength">
+            <div className="row"><h3>Brief strength</h3><span className="score">{score}/{checks.length}</span></div>
+            <div className="meter" role="meter" aria-label="Brief strength" aria-valuemin={0} aria-valuemax={checks.length} aria-valuenow={score}>
+              {checks.map((c, i) => <i key={c.id} className={i < score ? 'on' : ''}/>)}
+            </div>
+            <ul>
+              {checks.map(c => (
+                <li key={c.id} className={c.ok ? 'ok' : touched ? 'miss' : ''}><Icon type={c.ok ? 'check' : 'plus'} size={14}/>{c.label}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </section>
