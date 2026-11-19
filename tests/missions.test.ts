@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   calculateEligibility, makeProofDraft, parseTokenAmount, briefChecks, briefIdFromHash, briefLink, xIntent,
-  missions, liveBounties, queuedBounties, bountyIdeas, isWalletAddress,
+  missions, liveBounties, queuedBounties, isWalletAddress,
 } from '../lib/missions.ts';
 
 const WALLET = 'So11111111111111111111111111111111111111112';
@@ -44,7 +44,6 @@ test('proof validation rejects queued bounties, bad wallets, credentials and exe
 test('two bounties are live with their rewards', () => {
   assert.deepEqual(liveBounties.map(m => [m.id, m.reward]), [['001', '1 SOL'], ['002', '0.5 SOL']]);
   assert.equal(queuedBounties.length, 0);
-  assert.ok(bountyIdeas.length >= 3);
   for (const m of missions) {
     assert.ok([1, 2, 3, 4, 5].includes(m.difficulty));
     for (const k of ['vehicle', 'limit', 'fail'] as const) assert.ok(m.rules[k].length > 2);

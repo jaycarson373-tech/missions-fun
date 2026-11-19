@@ -109,11 +109,14 @@ ol,ul{margin:0;padding:0;list-style:none}
 .ideas{max-width:1100px;margin:0 auto;padding:40px var(--pad) 20px}
 .ideas .h2{margin-bottom:10px}
 .ideas-sub{color:var(--text-2);margin-bottom:24px}
-.idea-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.idea-grid li{display:flex;gap:12px;align-items:flex-start;padding:18px;border-radius:18px;background:var(--card);border:1px dashed var(--line)}
-.idea-grid svg{flex-shrink:0;margin-top:3px;color:var(--sun)}
-.idea-grid h3{font-size:17px;font-weight:800;margin-bottom:2px}
-.idea-grid p{font-size:14px;color:var(--text-2)}
+.mystery-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.mystery{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;padding:34px 20px;border-radius:22px;text-align:center;overflow:hidden;border:1px dashed #ff2e8866;background:repeating-linear-gradient(-45deg,#ffffff05 0 14px,transparent 14px 28px),linear-gradient(135deg,#2a0f45,#140b22)}
+.mystery .label{color:var(--text-3)}
+.mystery .q{font:clamp(64px,7vw,96px)/1 var(--display);background:var(--vice);-webkit-background-clip:text;background-clip:text;color:transparent;filter:blur(.5px);animation:glitch 3s steps(1) infinite}
+@keyframes glitch{0%,92%{transform:none;opacity:1}94%{transform:translateX(-4px) skewX(-8deg);opacity:.7}96%{transform:translateX(3px);opacity:.9}}
+.redact{display:grid;gap:8px;width:min(100%,280px)}
+.redact i{display:block;height:16px;border-radius:4px;background:#ffffff14}
+.redact i+i{width:70%;margin:0 auto}
 
 /* how */
 .how,.faq{max-width:1100px;margin:0 auto;padding:60px var(--pad)}
@@ -168,7 +171,7 @@ dialog::backdrop{background:#0b0614d9;backdrop-filter:blur(6px)}
   .hero-copy{padding:36px var(--pad) 26px;max-width:none}
   .bounty{margin-top:0;padding-top:10px}
   .card{grid-template-columns:1fr}
-  .steps,.idea-grid{grid-template-columns:1fr}
+  .steps,.mystery-grid{grid-template-columns:1fr}
 }
 @media(max-width:560px){
   .hero h1{font-size:clamp(56px,16vw,84px)}

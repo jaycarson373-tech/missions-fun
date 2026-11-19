@@ -21,16 +21,6 @@ export const missions: Mission[] = [
     rules: {vehicle: 'The police car you steal', limit: 'Until the wanted level clears', fail: 'You leave the car, it’s destroyed, or the clip cuts'}},
 ];
 
-// Ideas for future bounties. Not live; shown so people know what's coming.
-export const bountyIdeas = [
-  {title: 'Six-star selfie', blurb: 'Snap an in-game selfie with six stars over your head.'},
-  {title: 'Pedal pusher', blurb: 'Lose a four-star wanted level on a bicycle.'},
-  {title: 'Causeway landing', blurb: 'Land a plane on a highway and taxi to a stop.'},
-  {title: 'Slow and steady', blurb: 'Win a street race in the slowest car you can find.'},
-  {title: 'Rooftop run', blurb: 'Cross downtown without touching the street once.'},
-  {title: 'Clip of the week', blurb: 'The most-viewed bounty clip of the week takes a bonus.'},
-];
-
 export const liveBounties = missions.filter(m => m.status === 'live');
 export const queuedBounties = missions.filter(m => m.status === 'queued');
 

@@ -1,7 +1,7 @@
 'use client';
 import {useEffect, useRef, useState} from 'react';
 import {
-  liveBounties, bountyIdeas, calculateEligibility, makeProofDraft, briefLink, briefIdFromHash,
+  liveBounties, calculateEligibility, makeProofDraft, briefLink, briefIdFromHash,
   shareText, xIntent, type Mission,
 } from '@/lib/missions';
 import {Icon, Scene, Star} from './art';
@@ -18,7 +18,7 @@ const steps = [
 
 const faq = [
   ['Where does the reward come from?', 'Each bounty’s reward is set in SOL and paid from the bounty pool. Trading fees fill the pool, and the pool holds Take-Two. No team supply. Subject to platform rules and legal review; payouts are not live yet.'],
-  ['When is the next bounty?', 'New bounties get posted as the pool fills. The ideas list shows what’s coming.'],
+  ['When is the next bounty?', 'When the pool fills. Next bounties stay secret until they drop, so nobody gets a head start.'],
   ['Can more than one person win?', 'No. Each bounty pays the first clip that passes review. After that it closes.'],
   ['How are clips checked?', 'Against the bounty’s written rules, with AI helping and a person making the call. Your wallet must hold 2,500,000+ $BOUNTY.'],
   ['Is this made by Rockstar?', 'No. BOUNTY is an independent community project with original artwork, not affiliated with Rockstar Games or Take-Two.'],
@@ -110,7 +110,7 @@ export default function Missions() {
 
       <header className="top">
         <a href="#" className="brand" aria-label="Bounty home"><img src="/mark.svg" width="34" height="34" alt=""/><span>Bounty</span></a>
-        <nav aria-label="Main navigation"><a href="#bounty">Bounties</a><a href="#ideas">Coming next</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+        <nav aria-label="Main navigation"><a href="#bounty">Bounties</a><a href="#next">Next</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
         <button className="btn btn-pink btn-sm" onClick={() => openSubmit()}>Submit a clip</button>
       </header>
 
@@ -155,12 +155,19 @@ export default function Missions() {
           ))}
         </section>
 
-        <section className="ideas" id="ideas">
-          <h2 className="h2">Coming next</h2>
-          <p className="ideas-sub">Bounty ideas we’re lining up. New ones go live as the pool fills.</p>
-          <ul className="idea-grid">
-            {bountyIdeas.map(i => <li key={i.title}><Icon type="lock" size={16}/><div><h3>{i.title}</h3><p>{i.blurb}</p></div></li>)}
-          </ul>
+        <section className="ideas" id="next">
+          <h2 className="h2">Next bounties</h2>
+          <p className="ideas-sub">Classified until they drop. New bounties go live when the pool fills.</p>
+          <div className="mystery-grid">
+            {[3, 4].map(n => (
+              <div className="mystery" key={n}>
+                <span className="label"><Icon type="lock" size={14}/>Bounty #00{n}</span>
+                <b className="q">???</b>
+                <span className="redact" aria-hidden="true"><i/><i/></span>
+                <span className="label">Reward ??? SOL · drops when the pool fills</span>
+              </div>
+            ))}
+          </div>
         </section>
 
         <section className="how" id="how">
