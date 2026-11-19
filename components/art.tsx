@@ -12,6 +12,10 @@ export function Icon({type = 'arrow', size = 20}: {type?: string; size?: number}
         : type === 'download' ? <path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/>
         : type === 'x' ? <path d="M4 4l16 16M20 4 4 20" strokeWidth="2.4"/>
         : type === 'play' ? <path d="M7 4v16l13-8z" fill="currentColor"/>
+        : type === 'lock' ? <><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></>
+        : type === 'wallet' ? <><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4z"/><path d="M4 7V6a2 2 0 0 1 2-2h10v3M16 13.5h.01"/></>
+        : type === 'clip' ? <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z" fill="currentColor"/></>
+        : type === 'coin' ? <><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h3.75a1.75 1.75 0 0 1 0 3.5h-2.5a1.75 1.75 0 0 0 0 3.5H14.5"/></>
         : <path d="M4 12h15m-6-6 6 6-6 6"/>}
     </svg>
   );
@@ -122,24 +126,6 @@ export function Skyline({className = ''}: {className?: string}) {
         </g>
       ))}
       <Palm x={110} h={300}/><Palm x={190} h={240} flip/><Palm x={1260} h={320} flip/><Palm x={1350} h={250}/>
-    </svg>
-  );
-}
-
-export function Minimap() {
-  return (
-    <svg className="minimap" viewBox="0 0 220 140" aria-hidden="true">
-      <rect width="220" height="140" rx="10" fill="#1d3b2e"/>
-      <path d="M150 0c10 30 40 50 70 60v80h-34c-6-40-20-90-36-140z" fill="#1f6f8b"/>
-      <path d="M0 40h220M0 100h150M70 0v140M135 0v140" stroke="#cfd8c2" strokeWidth="6" opacity=".85"/>
-      <path d="M0 40h220M0 100h150M70 0v140M135 0v140" stroke="#8fa086" strokeWidth="1.5"/>
-      <path d="M150 0c10 30 40 50 70 60" stroke="#ffd23f" strokeWidth="4" fill="none"/>
-      <g className="blips">
-        {[[40, 22], [104, 70], [176, 104], [28, 120], [120, 22]].map(([x, y], i) =>
-          <g key={i} transform={`translate(${x} ${y})`}><circle r="9" fill="#ffd23f33" className="blip-ring"/><path d="m0-5 1.5 3.2 3.5.4-2.6 2.4.7 3.5L0 2.8l-3.1 1.7.7-3.5L-5-1.4l3.5-.4z" fill="#ffd23f"/></g>)}
-      </g>
-      <path d="m104 60 7 16-7-4-7 4z" fill="#fff" stroke="#000" strokeWidth="1"/>
-      <rect width="220" height="140" rx="10" fill="none" stroke="#000" strokeWidth="4"/>
     </svg>
   );
 }

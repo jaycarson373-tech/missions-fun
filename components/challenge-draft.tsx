@@ -1,7 +1,7 @@
 'use client';
 import {useEffect, useState} from 'react';
 import {Icon} from './art';
-import {Poster} from './poster';
+import {Ticket} from './poster';
 import {briefChecks, REQUIRED_TOKENS} from '@/lib/missions';
 
 const empty = {title: '', objective: '', evidence: '', rewardNotes: ''};
@@ -45,42 +45,41 @@ export default function ChallengeDraft() {
     const a = document.createElement('a');
     a.href = url; a.download = 'bounty-challenge-draft.json'; a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    setStatus('Challenge draft downloaded. It has not been published or funded.');
+    setStatus('Pitch downloaded. It has not been sent or posted.');
   }
 
   return (
     <section className="editor" id="create">
       <div className="head reveal">
-        <p className="kicker">Mission editor</p>
-        <h2 className="h-big">Make your<br/><span className="vice-text">own bounty.</span></h2>
-        <p className="sub">Write the challenge, set what counts, watch the poster build itself. Drafts stay on your device.</p>
+        <p className="kicker">Got an idea?</p>
+        <h2 className="h-big">Pitch the<br/><span className="vice-text">next bounty.</span></h2>
+        <p className="sub">We post bounties one at a time. Write up a fun one with rules anyone can judge from a clip. Your pitch stays on your device until pitching opens.</p>
       </div>
 
       <div className="editor-grid">
         <form className="panel beam reveal" onSubmit={save}>
-          <label>Challenge title<input value={draft.title} onChange={set('title')} required maxLength={100} placeholder="Six stars, five minutes, no deaths"/></label>
+          <label>Challenge title<input value={draft.title} onChange={set('title')} required maxLength={100} placeholder="Jet ski off the tallest pier"/></label>
           <label>What must the player do?<textarea value={draft.objective} onChange={set('objective')} required minLength={20} maxLength={2000} rows={3} placeholder="Objective, time limit, vehicle and what counts as a fail."/></label>
           <label>What must the clip show?<textarea value={draft.evidence} onChange={set('evidence')} required minLength={20} maxLength={2000} rows={3} placeholder="One continuous clip, HUD and timer visible, start to finish."/></label>
-          <label>Reward plan <small>(optional)</small><input value={draft.rewardNotes} onChange={set('rewardNotes')} maxLength={300} placeholder="Sponsor or community pool; no player wagers"/></label>
+          <label>Anything else? <small>(optional)</small><input value={draft.rewardNotes} onChange={set('rewardNotes')} maxLength={300} placeholder="Why it would be fun to watch"/></label>
           <div className="draft-actions">
-            <button className="btn btn-pink shimmer" type="submit">Save draft <Icon type="download" size={18}/></button>
-            {touched && <button type="button" className="link-btn" onClick={() => { setDraft(empty); setStatus('Draft cleared from this device.'); }}>Clear</button>}
+            <button className="btn btn-pink shimmer" type="submit">Save pitch <Icon type="download" size={18}/></button>
+            {touched && <button type="button" className="link-btn" onClick={() => { setDraft(empty); setStatus('Pitch cleared from this device.'); }}>Clear</button>}
           </div>
           {status && <p role="status" className="note">{status}</p>}
-          <p className="note">Saved on this device only. Publishing, funding and AI clip review are not live yet.</p>
+          <p className="note">Saved on this device only. Nothing is sent anywhere yet.</p>
         </form>
 
         <div className="editor-side reveal">
           <div className="preview" aria-live="polite">
             <span className="preview-tag">Live preview</span>
-            <Poster
-              no="B-NEW"
+            <Ticket
+              no="Bounty #???"
+              status={<span className="chip-status draft">Pitch</span>}
               stars={Math.max(1, Math.round(score / checks.length * 5))}
               kind="file" color="#ff2e88"
-              title={draft.title.trim() || 'Name your challenge'}
-              body={draft.objective.trim() || 'Say exactly what the player must do, with what, and how fast.'}>
-              <div className="poster-reward"><b>$???</b><span>Draft · not published</span></div>
-            </Poster>
+              title={draft.title.trim() || 'Name your bounty'}
+              body={draft.objective.trim() || 'Say exactly what the player must do, with what, and how fast.'}/>
           </div>
           <div className="strength">
             <div className="row"><h3>Brief strength</h3><span className="score">{score}/{checks.length}</span></div>

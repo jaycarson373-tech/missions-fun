@@ -1,5 +1,5 @@
 import type {ReactNode} from 'react';
-import {MissionArt, Star} from './art';
+import {Icon, MissionArt, Star} from './art';
 import {difficultyLabel, MAX_STARS} from '@/lib/missions';
 
 export function Stars({n, label = false, size = 16}: {n: number; label?: boolean; size?: number}) {
@@ -12,23 +12,34 @@ export function Stars({n, label = false, size = 16}: {n: number; label?: boolean
   );
 }
 
-export function Poster({no, title, body, stars, kind, color, top, children}: {
-  no: string; title: ReactNode; body: ReactNode; stars?: number; kind?: string; color?: string;
-  top?: ReactNode; children?: ReactNode;
+/* A bounty "ticket": dark card with a sunset border. Used for the live bounty preview and drafts. */
+export function Ticket({no, status, title, body, stars, kind, color, children}: {
+  no: string; status: ReactNode; title: ReactNode; body: ReactNode; stars?: number; kind?: string; color?: string; children?: ReactNode;
 }) {
   return (
-    <div className="poster">
-      <span className="tape" aria-hidden="true"/>
-      <div className="poster-top">
-        <span className="poster-no">{no}</span>
+    <div className="ticket">
+      <div className="ticket-top"><span className="ticket-no">{no}</span>{status}</div>
+      <div className="ticket-art"><MissionArt kind={kind} color={color}/></div>
+      <div className="ticket-body">
         {stars ? <Stars n={stars}/> : null}
-        {top}
+        <h3 className="ticket-title">{title}</h3>
+        <p>{body}</p>
+        {children}
       </div>
-      <p className="poster-wanted" aria-hidden="true">Wanted</p>
-      <div className="poster-photo"><MissionArt kind={kind} color={color}/></div>
-      <h3 className="poster-title">{title}</h3>
-      <p className="poster-body">{body}</p>
-      {children}
+    </div>
+  );
+}
+
+export function LockedTicket({no, category, stars}: {no: string; category: string; stars: number}) {
+  return (
+    <div className="ticket locked" aria-label={`Bounty ${no}, locked until the pool fills`}>
+      <div className="ticket-top"><span className="ticket-no">{no}</span><span className="chip-status queued"><Icon type="lock" size={13}/>Locked</span></div>
+      <div className="ticket-art classified"><Icon type="lock" size={38}/><span>Classified</span></div>
+      <div className="ticket-body">
+        <Stars n={stars}/>
+        <p className="redact" aria-hidden="true"><i style={{width: '78%'}}/><i style={{width: '52%'}}/></p>
+        <p className="locked-note">{category} · posts when the pool fills</p>
+      </div>
     </div>
   );
 }

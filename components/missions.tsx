@@ -1,43 +1,42 @@
 'use client';
 import {useEffect, useRef, useState} from 'react';
 import {
-  missions, categories, calculateEligibility, makeProofDraft, briefLink, briefIdFromHash,
-  shareText, xIntent, type Category, type Mission,
+  liveBounties, queuedBounties, calculateEligibility, makeProofDraft, briefLink, briefIdFromHash,
+  shareText, xIntent, type Mission,
 } from '@/lib/missions';
-import {Icon, MissionArt, Minimap, Skyline, Star} from './art';
-import {Poster, Stars} from './poster';
+import {Icon, Skyline, Star} from './art';
+import {LockedTicket, Stars} from './poster';
 import ChallengeDraft from './challenge-draft';
 
-type Modal = {type: 'mission'; mission: Mission} | {type: 'eligibility'} | null;
+type Modal = {type: 'submit'; mission: Mission} | {type: 'eligibility'} | null;
+const live = liveBounties[0];
 
 const ticker = [
-  'Six stars. Five minutes.', 'Steal a cop car. Lose the cops.', 'Stick the landing.',
-  'One clip. No cuts.', 'No entry fees. No wagers.', 'Clip or it didn’t happen.',
+  `Bounty #${live.id} is live`, live.title, 'Fees fill the pool', 'The pool holds Take-Two', 'One clip. No cuts.', 'No team supply',
 ];
 
-const objectives = [
-  ['Create the challenge', 'Write a brief anyone can judge from a clip: the objective, the vehicle, the time limit and what counts as a fail.'],
-  ['Record the run', 'Play it in GTA VI and capture one continuous clip, start to finish, HUD on.'],
-  ['The clip gets checked', 'AI compares the footage to every written rule. Anything uncertain goes to a human reviewer. In build, not live yet.'],
-  ['Mission passed', 'Accepted runs are paid from a non-wagered community or sponsor pool, or earn on-chain reputation. Subject to platform rules and legal review.'],
+const steps = [
+  {icon: 'wallet', t: 'Hold 2.55M+', b: 'Keep at least 2,550,000 $BOUNTY in your Solana wallet. That is what makes you eligible.'},
+  {icon: 'clip', t: 'Pull it off', b: 'Do the live bounty in GTA VI and record it in one continuous clip, HUD on, no cuts.'},
+  {icon: 'check', t: 'Submit with your wallet', b: 'Send the clip link with your wallet address. The clip is checked against the rules and your wallet against the 2.55M minimum.'},
+  {icon: 'coin', t: 'Get the bounty', b: 'Pass and the reward is paid in Take-Two from the bounty pool. Then the next bounty goes up.'},
 ];
 
-const sides = [
-  {key: 'creator', name: 'Creator', color: 'pink', icon: 'plus', blurb: 'You know the run nobody can pull off. Put it on the board with rules tight enough to judge from one clip.',
-    stats: [['Skill', 2], ['Creativity', 5], ['Effort', 2]], steps: ['Write the brief in the mission editor.', 'Set the vehicle, limit and fail conditions.', 'A pool gets funded, entries open.'], cta: 'Post a challenge', href: '#create'},
-  {key: 'hunter', name: 'Hunter', color: 'teal', icon: 'play', blurb: 'You already play the game. The board puts a target on your best run and a reason to hit record.',
-    stats: [['Skill', 5], ['Creativity', 2], ['Effort', 4]], steps: ['Pick a bounty from the board.', 'Record the run in one uncut clip.', 'Submit it for AI and human review.'], cta: 'Browse bounties', href: '#board'},
-  {key: 'holder', name: 'Holder', color: 'sun', icon: 'check', blurb: 'Hold 2,550,000 $BOUNTY to submit runs. Planned: wallet reputation from verified runs and a say in what goes on the board.',
-    stats: [['Skill', 1], ['Creativity', 3], ['Effort', 1]], steps: ['Hold the threshold in the wallet you submit with.', 'Verified runs build your reputation (planned).', 'Vote on new bounties (planned).'], cta: 'Check the threshold', href: ''},
-] as const;
+const loop = [
+  ['Trades', 'Every $BOUNTY trade pays a creator fee'],
+  ['Pool', 'Fees fill the bounty pool, held in Take-Two'],
+  ['Bounty', 'A new bounty goes up when the pool can fund it'],
+  ['Payout', 'The first clip that passes gets paid from the pool'],
+];
 
 const faq = [
-  ['What is BOUNTY?', 'A board of player-made GTA VI challenges. Survive six stars for five minutes, escape in a stolen police car, land a brutal stunt. You record the run, submit the clip, and it gets checked against the rules.'],
-  ['How does verification work?', 'Every brief has written rules that can be judged from footage. AI-assisted review checks the clip against each rule, and a human settles anything uncertain or disputed. This is in build and not active in the preview.'],
-  ['Where do rewards come from?', 'Non-wagered community or sponsor reward pools, or token-based reputation. Players never bet against each other and there are no entry fees. All of it is subject to platform rules and legal review, and none of it is live yet.'],
-  ['Why 2,550,000 $BOUNTY?', 'It is the minimum holding to submit a run. Holding never wins a bounty on its own: you still need a funded brief and a clip that passes review. The mint and the balance-check timing are published before submissions open.'],
-  ['Can I do these challenges yet?', 'Briefs are proposals until vehicles, routes and wanted levels are confirmed in playable GTA VI. The six-star brief falls back to the highest wanted level the game really has.'],
-  ['Is this made by Rockstar?', 'No. BOUNTY is an independent community project with original artwork. It is not affiliated with Rockstar Games or Take-Two, and tokens give no access to GTA VI, game items or official rewards.'],
+  ['How do I win a bounty?', 'Do the live bounty in GTA VI, record one uncut clip and submit it with your wallet. If the clip meets every rule and your wallet holds 2,550,000 $BOUNTY or more, you get the reward.'],
+  ['Why do I need 2.55M tokens?', 'Only wallets holding at least 2,550,000 $BOUNTY can submit. The calculator on this page is an estimate only. The real check happens against your wallet when submissions open.'],
+  ['Where does the reward come from?', 'Creator fees from $BOUNTY trading fill the bounty pool, and the pool holds Take-Two. Rewards are paid from it. Everything is subject to platform rules and legal review, and payouts are not live in this preview.'],
+  ['When does the next bounty drop?', 'Bounties go up one at a time. Once the pool has enough in it to fund the next one, it is posted here.'],
+  ['Is there a team supply?', 'No. There is no team token allocation.'],
+  ['How are clips checked?', 'Each bounty has written rules you can judge from footage. Clips are checked against every rule, with AI assisting and a person making the call. Review is in build and not active yet.'],
+  ['Is this made by Rockstar?', 'No. BOUNTY is an independent community project with original artwork. It is not affiliated with Rockstar Games or Take-Two, and tokens give no access to GTA VI or official rewards.'],
 ];
 
 function useReveal() {
@@ -53,68 +52,64 @@ function useReveal() {
   }, []);
 }
 
-function CountUp({to, suffix = ''}: {to: number; suffix?: string}) {
-  const [v, setV] = useState(to);
-  const ref = useRef<HTMLSpanElement>(null);
+function Countdown() {
+  const [t, setT] = useState(300);
   useEffect(() => {
-    const el = ref.current;
-    if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
-    setV(0);
-    const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      io.disconnect();
-      const t0 = performance.now();
-      const step = (t: number) => { const k = Math.min(1, (t - t0) / 900); setV(Math.round(to * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(step); };
-      requestAnimationFrame(step);
-    });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [to]);
-  return <span ref={ref}>{v}{suffix}</span>;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const id = setInterval(() => setT(v => (v <= 0 ? 300 : v - 1)), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return <span className="timer">{String(Math.floor(t / 60)).padStart(2, '0')}:{String(t % 60).padStart(2, '0')}</span>;
+}
+
+function Phone() {
+  return (
+    <div className="phone" aria-hidden="true">
+      <div className="phone-screen">
+        <div className="phone-wall"><Skyline/></div>
+        <div className="phone-bar"><span>11:19</span><span className="phone-dots"><i/><i/><i/></span></div>
+        <p className="phone-clock">11:19</p>
+        <div className="notifs">
+          <div className="notif n1"><img src="/mark.svg" width="34" height="34" alt=""/><div><b>BOUNTY · now</b><p>New bounty posted: <strong>{live.title}</strong></p></div></div>
+          <div className="notif n2"><span className="notif-ico c-teal"><Icon type="coin" size={20}/></span><div><b>Pool · 2m</b><p>Fees are filling the pool. Next bounty posts when it can fund one.</p></div></div>
+          <div className="notif n3"><span className="notif-ico c-sun"><Icon type="clip" size={20}/></span><div><b>Reminder</b><p>One clip. No cuts. Wallet needs 2.55M+.</p></div></div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function Missions() {
-  const [category, setCategory] = useState<Category>('All');
-  const [query, setQuery] = useState('');
-  const [saved, setSaved] = useState<string[]>([]);
-  const [savedOnly, setSavedOnly] = useState(false);
   const [modal, setModal] = useState<Modal>(null);
   const [notice, setNotice] = useState('');
   const [amount, setAmount] = useState('');
   const [estimate, setEstimate] = useState('');
   const [evidence, setEvidence] = useState('');
+  const [wallet, setWallet] = useState('');
   const [notes, setNotes] = useState('');
   const [formError, setFormError] = useState('');
-  const [faqOpen, setFaqOpen] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLElement | null>(null);
   useReveal();
 
   useEffect(() => {
-    try {
-      const x = JSON.parse(localStorage.getItem('missions:saved') || '[]');
-      if (Array.isArray(x)) setSaved(x.filter(id => typeof id === 'string' && missions.some(m => m.id === id)));
-    } catch {}
-  }, []);
-
-  useEffect(() => {
     if (modal) {
       opener.current = document.activeElement as HTMLElement;
       if (!dialog.current?.open) dialog.current?.showModal();
-      setFormError(''); setEvidence(''); setNotes(''); setEstimate(''); setAmount('');
+      setFormError(''); setEstimate(''); setAmount('');
     } else if (dialog.current?.open) {
       dialog.current.close();
       opener.current?.focus();
     }
   }, [modal]);
 
-  // Deep links: #brief-001 opens that brief.
+  // Deep link: #brief-001 opens the submit sheet for the live bounty.
   useEffect(() => {
     const open = () => {
       const id = briefIdFromHash(location.hash);
-      const m = id && missions.find(x => x.id === id);
-      if (m) setModal({type: 'mission', mission: m});
+      const m = id && liveBounties.find(x => x.id === id);
+      if (m) setModal({type: 'submit', mission: m});
     };
     open();
     addEventListener('hashchange', open);
@@ -123,25 +118,13 @@ export default function Missions() {
 
   useEffect(() => {
     try {
-      if (modal?.type === 'mission') {
+      if (modal?.type === 'submit') {
         if (location.hash !== `#brief-${modal.mission.id}`) history.replaceState(null, '', `#brief-${modal.mission.id}`);
       } else if (briefIdFromHash(location.hash)) {
         history.replaceState(null, '', location.pathname + location.search);
       }
     } catch {}
   }, [modal]);
-
-  // Press B to open the board, like a game menu.
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const t = e.target as HTMLElement;
-      if (e.key.toLowerCase() !== 'b' || e.metaKey || e.ctrlKey || e.altKey || dialog.current?.open) return;
-      if (t.closest('input,textarea,select,[contenteditable="true"]')) return;
-      document.getElementById('board')?.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
-    };
-    addEventListener('keydown', onKey);
-    return () => removeEventListener('keydown', onKey);
-  }, []);
 
   useEffect(() => {
     if (!notice) return;
@@ -151,43 +134,32 @@ export default function Missions() {
 
   async function copyLink(m: Mission) {
     const url = briefLink(location.origin, m.id);
-    try { await navigator.clipboard.writeText(url); setNotice('Brief link copied. Send it to someone who thinks they can do it.'); }
+    try { await navigator.clipboard.writeText(url); setNotice('Bounty link copied.'); }
     catch { setNotice(url); }
-  }
-
-  function bookmark(id: string) {
-    const next = saved.includes(id) ? saved.filter(x => x !== id) : [...saved, id];
-    setSaved(next);
-    try { localStorage.setItem('missions:saved', JSON.stringify(next)); }
-    catch { setNotice('Saved for this visit. Device storage is unavailable.'); }
   }
 
   function exportProof(m: Mission) {
     try {
-      const draft = makeProofDraft(m.id, evidence, notes);
+      const draft = makeProofDraft(m.id, evidence, notes, wallet);
       const link = URL.createObjectURL(new Blob([JSON.stringify(draft, null, 2)], {type: 'application/json'}));
       const a = document.createElement('a');
-      a.href = link; a.download = `bounty-${m.id}-proof-draft.json`; a.click();
+      a.href = link; a.download = `bounty-${m.id}-submission-draft.json`; a.click();
       setTimeout(() => URL.revokeObjectURL(link), 1000);
-      setFormError(''); setNotice('Proof draft downloaded. It has not been submitted.'); setModal(null);
-    } catch (e) { setFormError(e instanceof Error ? e.message : 'Please check your evidence.'); }
+      setFormError(''); setNotice('Submission draft saved. It has not been sent.'); setModal(null);
+    } catch (e) { setFormError(e instanceof Error ? e.message : 'Please check your submission.'); }
   }
 
   function checkAmount() {
     try {
       const r = calculateEligibility(amount);
       setEstimate(r.meetsThreshold
-        ? 'That amount meets the 2.55M threshold. This is an estimate, not a wallet check.'
-        : `${(Number(r.shortfall) / 1e6).toLocaleString('en-US')} more tokens needed. This calculator does not verify your wallet.`);
+        ? 'That meets the 2,550,000 minimum. This is an estimate, not a wallet check.'
+        : `${(Number(r.shortfall) / 1e6).toLocaleString('en-US')} more tokens needed. This calculator does not check your wallet.`);
     } catch (e) { setEstimate(e instanceof Error ? e.message : 'Check the amount.'); }
   }
 
-  const visible = missions.filter(m =>
-    (category === 'All' || m.category === category) &&
-    (!savedOnly || saved.includes(m.id)) &&
-    `${m.title} ${m.description} ${m.rules.vehicle}`.toLowerCase().includes(query.toLowerCase()));
-  const count = (c: Category) => c === 'All' ? missions.length : missions.filter(m => m.category === c).length;
-  const openMission = (m: Mission) => setModal({type: 'mission', mission: m});
+  const openSubmit = () => setModal({type: 'submit', mission: live});
+  const shareHref = xIntent(shareText(live.title), briefLink(typeof location === 'undefined' ? '' : location.origin, live.id));
 
   return (
     <div className="site">
@@ -196,14 +168,13 @@ export default function Missions() {
       <header className={menuOpen ? 'top open' : 'top'}>
         <a href="#" className="brand" aria-label="Bounty home"><img src="/mark.svg" width="34" height="34" alt=""/><span>Bounty</span></a>
         <nav id="nav" aria-label="Main navigation" onClick={() => setMenuOpen(false)}>
-          <a href="#objectives">Objectives</a>
-          <a href="#board">Wanted</a>
-          <a href="#sides">Pick a side</a>
-          <a href="#create">Mission editor</a>
+          <a href="#bounty">Live bounty</a>
+          <a href="#how">How it works</a>
+          <a href="#pool">The pool</a>
           <a href="#faq">FAQ</a>
         </nav>
         <div className="top-right">
-          <a href="#create" className="btn btn-pink btn-sm">Post a challenge</a>
+          <button className="btn btn-pink btn-sm" onClick={openSubmit}>Submit a clip</button>
           <button className="menu-btn" aria-expanded={menuOpen} aria-controls="nav" aria-label="Menu" onClick={() => setMenuOpen(!menuOpen)}><i/><i/></button>
         </div>
       </header>
@@ -215,25 +186,17 @@ export default function Missions() {
           <Skyline className="hero-city"/>
           <div className="retro-grid" aria-hidden="true"><i/></div>
 
-          <div className="hud hud-tl">
-            <p>Players set the challenge. <span className="c-sun">You</span> record the run. <span className="c-cash">The clip</span> is the proof. Press <kbd>B</kbd> to open the board.</p>
-          </div>
-          <div className="hud hud-tr" aria-label="Wanted level: six stars">
-            <span className="hud-label">Wanted level</span>
-            <span className="wanted-stars">{Array.from({length: 6}, (_, i) => <Star key={i} size={26}/>)}</span>
-            <span className="hud-label dim">Reward pools · not funded</span>
-          </div>
-          <div className="hud hud-bl"><Minimap/><span className="hud-bar"><i/><i/></span></div>
-          <div className="hud hud-br"><span>GTA VI · player-made challenges</span><span className="dim">Preview · sample briefs</span></div>
-
-          <div className="hero-center">
-            <h1 className="wordmark" aria-label="Bounty"><span aria-hidden="true">Bounty</span></h1>
-            <p className="tagline">Set the challenge. Record the run. <b>Prove it.</b></p>
+          <div className="hero-copy">
+            <p className="kicker"><span className="live-dot"/>GTA VI clip bounties · Bounty #{live.id} live</p>
+            <h1>Pull it off.<br/><span className="vice-text">Clip it.</span><br/>Get the bounty.</h1>
+            <p className="lede">Fun, ridiculous, hard things to do in GTA VI, posted one at a time. Nail it in one uncut clip, submit it with your wallet, and get paid in Take-Two from the bounty pool.</p>
             <div className="hero-actions">
-              <a href="#board" className="btn btn-pink shimmer">Browse bounties <Icon size={18}/></a>
-              <a href="#create" className="btn btn-outline">Post a challenge</a>
+              <a href="#bounty" className="btn btn-pink shimmer">See the live bounty <Icon size={18}/></a>
+              <a href="#how" className="btn btn-outline">How it works</a>
             </div>
+            <p className="fine">Preview. Submissions and payouts open at launch. Not affiliated with Rockstar Games.</p>
           </div>
+          <div className="hero-phone"><Phone/></div>
         </section>
 
         <div className="ticker" aria-hidden="true">
@@ -242,155 +205,127 @@ export default function Missions() {
           </div>
         </div>
 
-        {/* OBJECTIVES */}
-        <section className="objectives" id="objectives">
+        {/* LIVE BOUNTY */}
+        <section className="live-sec" id="bounty">
+          <div className="head reveal">
+            <p className="kicker">Live now</p>
+            <h2 className="h-big">Bounty <span className="vice-text">#{live.id}</span></h2>
+          </div>
+
+          <article className="feature reveal">
+            <div className="feature-art banner">
+              <div className="sky" aria-hidden="true"/>
+              <Skyline/>
+              <div className="banner-hud" aria-hidden="true">
+                <span className="wanted-row">{Array.from({length: 6}, (_, i) => <Star key={i} size={46}/>)}</span>
+                <Countdown/>
+              </div>
+              <span className="chip-status live"><span className="live-dot"/>Live</span>
+            </div>
+            <div className="feature-body">
+              <div className="fb-main">
+              <div className="feature-meta"><span className="tag">{live.category}</span><Stars n={live.difficulty} label size={20}/></div>
+              <h3>{live.title}</h3>
+              <p className="feature-lede">{live.description}</p>
+              <div className="feature-actions">
+                <button className="btn btn-pink shimmer" onClick={openSubmit}>Submit your clip <Icon type="clip" size={18}/></button>
+                <button className="chip" onClick={() => copyLink(live)}>Copy link</button>
+                <a className="chip" href={shareHref} target="_blank" rel="noopener noreferrer">Post on <Icon type="x" size={13}/></a>
+              </div>
+              <p className="eligible"><Icon type="wallet" size={16}/>Eligible wallets hold 2,550,000+ $BOUNTY. <button className="link-btn" onClick={() => setModal({type: 'eligibility'})}>Check an amount</button></p>
+              </div>
+              <div className="fb-side">
+              <dl className="rule-sheet">
+                <div><dt>Vehicle</dt><dd>{live.rules.vehicle}</dd></div>
+                <div><dt>Limit</dt><dd>{live.rules.limit}</dd></div>
+                <div><dt>Fail if</dt><dd>{live.rules.fail}</dd></div>
+                <div><dt>Reward</dt><dd>Take-Two, paid from the pool</dd></div>
+              </dl>
+              <p className="proof-head">The clip must show</p>
+              <ul className="proof-list">{live.proof.map(p => <li key={p}><Icon type="check" size={17}/>{p}</li>)}</ul>
+              </div>
+            </div>
+          </article>
+
+          <div className="queue reveal">
+            <div className="queue-head">
+              <div>
+                <h3>Up next</h3>
+                <p>The next bounty drops when the pool can fund it.</p>
+              </div>
+              <div className="pool-meter" aria-label="Pool size goes live with the token">
+                <span>Bounty pool</span>
+                <div className="bar"><i/></div>
+                <small>Live pool size shows here at launch</small>
+              </div>
+            </div>
+            <div className="queue-grid">
+              {queuedBounties.slice(0, 3).map((m, i) => <LockedTicket key={m.id} no={`Bounty #00${i + 2}`} category={m.category} stars={m.difficulty}/>)}
+            </div>
+          </div>
+        </section>
+
+        {/* HOW IT WORKS */}
+        <section className="how" id="how">
           <div className="head reveal">
             <p className="kicker">How it works</p>
-            <h2 className="h-big">Objectives</h2>
+            <h2 className="h-big">Four steps.<br/><span className="vice-text">That’s it.</span></h2>
           </div>
-          <ol className="obj-list">
-            {objectives.map(([t, b], i) => (
-              <li key={t} className="reveal" style={{transitionDelay: `${i * 80}ms`}}>
-                <span className="obj-no">0{i + 1}</span>
-                <div><h3>{t}</h3><p>{b}</p></div>
+          <ol className="how-steps">
+            {steps.map((s, i) => (
+              <li key={s.t} className="reveal" style={{transitionDelay: `${i * 80}ms`}}>
+                <div className="how-top"><span className="how-no">0{i + 1}</span><span className="how-ico"><Icon type={s.icon} size={26}/></span></div>
+                <h3>{s.t}</h3>
+                <p>{s.b}</p>
               </li>
             ))}
           </ol>
-          <div className="stats reveal">
-            <div><b><CountUp to={missions.length}/></b><span>briefs on the board</span></div>
-            <div><b className="c-pink"><CountUp to={0}/></b><span>entry fees. Ever.</span></div>
-            <div><b className="c-sun"><CountUp to={1}/></b><span>uncut clip is the proof</span></div>
-            <div><b className="c-teal"><CountUp to={2}/></b><span>checks: AI, then a human</span></div>
-          </div>
         </section>
 
-        {/* WANTED BOARD */}
-        <section className="board" id="board">
-          <div className="board-sky" aria-hidden="true"><Skyline/></div>
-          <div className="head reveal">
-            <p className="kicker">On the board</p>
-            <h2 className="h-big h-shadow">Wanted</h2>
-            <p className="sub">Difficulty in stars. Every brief is a proposal until its rules are confirmed in GTA VI and a reward pool is funded.</p>
-          </div>
-
-          <div className="tools reveal">
-            <div className="tabs" role="group" aria-label="Challenge category">
-              {categories.map(c => (
-                <button key={c} aria-pressed={category === c} className={category === c ? 'on' : ''} onClick={() => setCategory(c)}>{c}<small>{count(c)}</small></button>
-              ))}
-              <button aria-pressed={savedOnly} className={savedOnly ? 'on' : ''} onClick={() => setSavedOnly(!savedOnly)}><Icon type="bookmark" size={14}/>Saved<small>{saved.length}</small></button>
+        {/* THE POOL */}
+        <section className="pool" id="pool">
+          <div className="pool-grid">
+            <div className="head reveal">
+              <p className="kicker">The pool</p>
+              <h2 className="h-big">Fees in.<br/><span className="vice-text">Bounties out.</span></h2>
+              <p className="sub">Trading fees fill the bounty pool, and the pool holds Take-Two. Rewards come out of it, and every time it can fund another one, a new bounty goes up. No team supply.</p>
             </div>
-            <label className="search"><Icon type="search" size={17}/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search bounties" aria-label="Search challenges"/></label>
-          </div>
-
-          <div className="posters">
-            {visible.map((m, i) => (
-              <article key={m.id} className="poster-item reveal" style={{transitionDelay: `${(i % 3) * 70}ms`}}>
-                <Poster no={`B-${m.id}`} stars={m.difficulty} kind={m.kind} color={m.color}
-                  title={<button className="poster-open" onClick={() => openMission(m)}>{m.title}</button>}
-                  body={m.description}
-                  top={<button className={saved.includes(m.id) ? 'save on' : 'save'} aria-pressed={saved.includes(m.id)}
-                    aria-label={`${saved.includes(m.id) ? 'Unsave' : 'Save'} ${m.title}`} onClick={() => bookmark(m.id)}><Icon type="bookmark" size={16}/></button>}>
-                  <div className="poster-reward"><b>$???</b><span>Reward · pool not funded</span></div>
-                  <div className="poster-foot">
-                    <span>{m.rules.limit}</span>
-                    <button className="poster-link" onClick={() => openMission(m)} aria-label={`Read brief: ${m.title}`}>Read brief <Icon size={14}/></button>
-                  </div>
-                </Poster>
-              </article>
-            ))}
-          </div>
-          {!visible.length && (
-            <div className="empty">
-              <h3>No bounties match.</h3>
-              <p>Try another category or search, or turn off saved-only.</p>
-              <button className="btn btn-pink" onClick={() => { setSavedOnly(false); setQuery(''); setCategory('All'); }}>Show every bounty</button>
-            </div>
-          )}
-        </section>
-
-        {/* PICK A SIDE */}
-        <section className="sides" id="sides">
-          <div className="head reveal">
-            <p className="kicker">Character select</p>
-            <h2 className="h-big">Pick a side</h2>
-          </div>
-          <div className="side-grid">
-            {sides.map((s, i) => (
-              <article key={s.key} className={`side side-${s.color} reveal`} style={{transitionDelay: `${i * 90}ms`}}>
-                <div className="side-banner"><h3>{s.name}</h3><span className="side-icon"><Icon type={s.icon} size={40}/></span></div>
-                <div className="side-body">
-                  <p>{s.blurb}</p>
-                  <dl className="side-stats">
-                    {s.stats.map(([k, v]) => (
-                      <div key={k}><dt>{k}</dt><dd aria-label={`${v} of 5`}>{Array.from({length: 5}, (_, j) => <i key={j} className={j < v ? 'on' : ''}/>)}</dd></div>
-                    ))}
-                  </dl>
-                  <ol className="side-steps">{s.steps.map(t => <li key={t}>{t}</li>)}</ol>
-                  {s.href
-                    ? <a href={s.href} className="btn btn-side">{s.cta}</a>
-                    : <button className="btn btn-side" onClick={() => setModal({type: 'eligibility'})}>{s.cta}</button>}
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* CLAIMS + MONEY */}
-        <section className="claims" id="claims">
-          <div className="head reveal">
-            <p className="kicker">Claims</p>
-            <h2 className="h-big">Clip or it<br/><span className="vice-text">didn’t happen.</span></h2>
-          </div>
-          <div className="claims-grid">
-            <ol className="claim-steps reveal">
-              {[['Record', 'One continuous clip of the full run, HUD on.'], ['Submit', 'Bounty ID, the clip link and the wallet to credit.'], ['AI check', 'Footage checked against every written rule.'], ['Human review', 'A person settles anything uncertain or disputed.']].map(([t, b], i) => (
-                <li key={t}><span>{i + 1}</span><div><h3>{t}</h3><p>{b}</p></div></li>
+            <ol className="loop reveal" aria-label="How the pool works">
+              {loop.map(([t, b], i) => (
+                <li key={t} style={{['--i' as string]: i}}><b>{t}</b><span>{b}</span></li>
               ))}
             </ol>
-            <div className="verdicts reveal">
-              <div className="verdict pass"><p>Mission passed</p><span>Rules met. Reward or reputation credited.</span></div>
-              <div className="verdict fail"><p>Wasted</p><span>Rule missed or the clip was cut. Try again.</span></div>
-              <p className="note">Review and payouts are in build. Nothing is submitted or paid in this preview.</p>
-            </div>
           </div>
-          <div className="money reveal">
-            <h3>No bets. Just bounties.</h3>
-            <div className="money-grid">
-              <div><b className="c-cash">Reward pools</b><p>Sponsors and communities fund each bounty. Players never wager against each other and there are no entry fees.</p></div>
-              <div><b className="c-sun">Reputation</b><p>Verified runs could build a public, token-based reputation tied to your wallet.</p></div>
-              <div><b className="c-teal">Rules first</b><p>Every crypto feature is subject to platform rules and legal review before it goes live.</p></div>
-            </div>
+          <div className="pool-stats reveal">
+            <div><b>0</b><span>team supply</span></div>
+            <div><b className="c-pink">1</b><span>bounty live at a time</span></div>
+            <div><b className="c-sun">2.55M+</b><span>to be eligible</span></div>
+            <div><b className="c-teal">TTWO</b><span>what the pool holds</span></div>
           </div>
         </section>
 
         <ChallengeDraft/>
 
-        {/* PAUSE MENU FAQ */}
-        <section className="pause" id="faq">
-          <div className="head reveal"><p className="kicker">Pause menu</p><h2 className="h-big">FAQ</h2></div>
-          <div className="pause-menu reveal">
-            <div className="pause-list" role="tablist" aria-label="Questions">
-              {faq.map(([q], i) => (
-                <button key={q} role="tab" id={`faq-tab-${i}`} aria-selected={faqOpen === i} aria-controls="faq-panel" className={faqOpen === i ? 'on' : ''} onClick={() => setFaqOpen(i)}>{q}</button>
-              ))}
-            </div>
-            <div className="pause-panel" role="tabpanel" id="faq-panel" aria-labelledby={`faq-tab-${faqOpen}`}>
-              <h3>{faq[faqOpen][0]}</h3>
-              <p>{faq[faqOpen][1]}</p>
-            </div>
+        {/* FAQ */}
+        <section className="faq" id="faq">
+          <div className="head reveal"><p className="kicker">Questions</p><h2 className="h-big">FAQ</h2></div>
+          <div className="faq-list reveal">
+            {faq.map(([q, a], i) => (
+              <details key={q} open={i === 0}><summary>{q}<Icon type="plus" size={20}/></summary><p>{a}</p></details>
+            ))}
           </div>
         </section>
 
-        {/* FINAL CTA */}
+        {/* FINAL */}
         <section className="final">
           <div className="sky" aria-hidden="true"/>
           <Skyline/>
           <div className="final-inner reveal">
-            <h2 className="h-big h-shadow">Got a run worth<br/>challenging?</h2>
+            <p className="kicker"><span className="live-dot"/>Live now</p>
+            <h2 className="h-big h-shadow">{live.title}</h2>
             <div className="hero-actions">
-              <a href="#create" className="btn btn-pink shimmer">Post a challenge <Icon size={18}/></a>
-              <a href="#board" className="btn btn-outline">Browse bounties</a>
+              <button className="btn btn-pink shimmer" onClick={openSubmit}>Submit your clip <Icon size={18}/></button>
+              <a href="#create" className="btn btn-outline">Pitch a bounty</a>
             </div>
           </div>
         </section>
@@ -398,7 +333,7 @@ export default function Missions() {
 
       <footer>
         <a href="#" className="brand"><img src="/mark.svg" alt="" width="26" height="26"/><span>Bounty</span></a>
-        <p>Independent GTA VI community project. Not affiliated with Rockstar Games or Take-Two. Rewards and reputation are subject to platform rules and legal review.</p>
+        <p>Independent GTA VI community project. Not affiliated with Rockstar Games or Take-Two. Rewards are subject to platform rules and legal review.</p>
         <div><a href="#faq">FAQ</a><a href="/brand/logo.svg" download>Brand mark <Icon type="download" size={14}/></a></div>
       </footer>
 
@@ -412,54 +347,30 @@ export default function Missions() {
       <dialog ref={dialog} onCancel={() => setModal(null)} onClose={() => { if (modal) setModal(null); }}
         onClick={e => { if (e.target === e.currentTarget) setModal(null); }} aria-labelledby="modal-title">
         <button className="modal-close" aria-label="Close dialog" onClick={() => setModal(null)}><Icon type="close"/></button>
-        {modal?.type === 'mission' ? (
-          <>
-            <div className="modal-art"><MissionArt kind={modal.mission.kind} color={modal.mission.color}/></div>
-            <div className="modal-body">
-              <p className="kicker">Bounty B-{modal.mission.id} · {modal.mission.category} · proposed</p>
-              <h2 id="modal-title">{modal.mission.title}</h2>
-              <Stars n={modal.mission.difficulty} label size={20}/>
-              <p className="modal-lede">{modal.mission.description}</p>
-              <dl className="rule-sheet">
-                <div><dt>Vehicle</dt><dd>{modal.mission.rules.vehicle}</dd></div>
-                <div><dt>Limit</dt><dd>{modal.mission.rules.limit}</dd></div>
-                <div><dt>Fail if</dt><dd>{modal.mission.rules.fail}</dd></div>
-                <div><dt>Reward</dt><dd>Pool not funded</dd></div>
-              </dl>
-              <p className="note">Rules are proposed and get confirmed in playable GTA VI before the bounty opens.</p>
-              <div className="share-row">
-                <span>Call someone out</span>
-                <div>
-                  <button type="button" className="chip" onClick={() => copyLink(modal.mission)}>Copy link</button>
-                  <a className="chip chip-pink" target="_blank" rel="noopener noreferrer"
-                    href={xIntent(shareText(modal.mission.title), briefLink(typeof location === 'undefined' ? '' : location.origin, modal.mission.id))}>
-                    Post on <Icon type="x" size={13}/>
-                  </a>
-                </div>
-              </div>
-              <h3>Bring this evidence</h3>
-              <ul className="proof-list">{modal.mission.proof.map(p => <li key={p}><Icon type="check" size={17}/>{p}</li>)}</ul>
-              <form onSubmit={e => { e.preventDefault(); exportProof(modal.mission); }}>
-                <h3>Prepare your proof <small>Local draft</small></h3>
-                <p className="note">Save an evidence package for later. This preview does not submit it or verify eligibility.</p>
-                <label>Evidence link<input type="url" placeholder="https://…" required value={evidence} onChange={e => setEvidence(e.target.value)} maxLength={2000}/></label>
-                <label>What does it show?<textarea rows={3} required minLength={20} maxLength={2000} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Timestamps, the objective and how the clip proves it…"/></label>
-                {formError && <p className="error" role="alert">{formError}</p>}
-                <button type="submit" className="btn btn-pink">Export proof draft <Icon type="download" size={18}/></button>
-              </form>
-            </div>
-          </>
+        {modal?.type === 'submit' ? (
+          <div className="modal-body">
+            <p className="kicker">Bounty #{modal.mission.id} · submit a clip</p>
+            <h2 id="modal-title">{modal.mission.title}</h2>
+            <ul className="proof-list">{modal.mission.proof.map(p => <li key={p}><Icon type="check" size={17}/>{p}</li>)}</ul>
+            <form onSubmit={e => { e.preventDefault(); exportProof(modal.mission); }}>
+              <label>Your Solana wallet<input value={wallet} onChange={e => setWallet(e.target.value)} required maxLength={60} placeholder="The wallet holding 2,550,000+ $BOUNTY" autoComplete="off" spellCheck={false}/></label>
+              <label>Clip link<input type="url" placeholder="https://…" required value={evidence} onChange={e => setEvidence(e.target.value)} maxLength={2000}/></label>
+              <label>What does the clip show?<textarea rows={3} required minLength={20} maxLength={2000} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Timestamps, when the timer starts and ends, anything a reviewer should look for…"/></label>
+              {formError && <p className="error" role="alert">{formError}</p>}
+              <button type="submit" className="btn btn-pink">Save submission <Icon type="download" size={18}/></button>
+              <p className="note">Submissions open at launch. For now this saves a draft with your wallet and clip link on your device. Nothing is sent, signed or checked.</p>
+            </form>
+          </div>
         ) : modal?.type === 'eligibility' ? (
           <div className="modal-body access">
-            <p className="kicker">Holder requirement</p>
-            <h2 id="modal-title">2,550,000 <span className="vice-text">$BOUNTY</span></h2>
-            <p className="modal-lede">Hold at least 2.55 million tokens to submit a run. Winning still means a funded brief and a clip that passes review.</p>
-            <dl className="rule-sheet one"><div><dt>Token mint</dt><dd>Awaiting launch configuration</dd></div></dl>
-            <h3>Check the threshold</h3>
-            <p className="note">Balance calculator only. No wallet is connected or verified.</p>
+            <p className="kicker">Eligibility</p>
+            <h2 id="modal-title">2,550,000+ <span className="vice-text">$BOUNTY</span></h2>
+            <p className="modal-lede">Your wallet needs at least 2.55 million tokens to submit a clip.</p>
+            <dl className="rule-sheet one"><div><dt>Token mint</dt><dd>Published at launch</dd></div></dl>
+            <p className="note">Calculator only. No wallet is connected or checked.</p>
             <form className="calc" onSubmit={e => { e.preventDefault(); checkAmount(); }}>
-              <label>Example token balance<input inputMode="decimal" value={amount} onChange={e => { setAmount(e.target.value); setEstimate(''); }} placeholder="2550000" required maxLength={40}/></label>
-              <button className="btn btn-pink" type="submit">Calculate <Icon size={18}/></button>
+              <label>Token amount<input inputMode="decimal" value={amount} onChange={e => { setAmount(e.target.value); setEstimate(''); }} placeholder="2550000" required maxLength={40}/></label>
+              <button className="btn btn-pink" type="submit">Check <Icon size={18}/></button>
             </form>
             {estimate && <p className="estimate" role="status">{estimate}</p>}
           </div>

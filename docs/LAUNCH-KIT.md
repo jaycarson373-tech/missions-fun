@@ -14,4 +14,4 @@ GTA players already invent their own challenges. BOUNTY gives each one a clear b
 The current 2.55M-token eligibility requirement is retained. Gameplay mechanics must be verified before publishing funded challenges. No official Rockstar or Take-Two affiliation.
 
 ## Brand
-Original orange B mark on a Vice-night look: night purple base, pink-orange-yellow sunset gradient, teal and cash-green accents, sunset skyline with palms, retro grid, game-HUD widgets and paper wanted posters. Self-hosted Anton, Barlow Condensed and Inter (all OFL). No Rockstar logos, fonts or artwork.
+Original orange B mark on a Vice-night look: night purple base, pink-orange-yellow sunset gradient, teal and cash-green accents, sunset skyline with palms, retro grid, a phone-notification hero and dark bounty tickets with a sunset border. Self-hosted Anton, Barlow Condensed and Inter (all OFL). No Rockstar logos, fonts or artwork.
