@@ -181,11 +181,18 @@ export default function Missions() {
           <div className="hero-copy">
             <p className="pill"><span className="live-dot"/>{liveBounties.length} bounties live · {liveBounties.reduce((t, m) => t + parseFloat(m.reward), 0)} SOL up for grabs</p>
             <h1>Pull it off.<br/>Clip it.<br/><span className="vice-text">Get paid.</span></h1>
-            <p className="lede">Wild things to pull off in GTA VI. Clip it, submit it with your wallet, and the first clip that passes takes the bounty.</p>
+            <p className="lede">Each bounty is a challenge with real SOL on it. Pull it off in GTA VI, record it in one uncut clip, and submit it with your wallet. The first clip that passes gets paid.</p>
             <div className="hero-actions">
               <a href="#bounty" className="btn btn-pink">See the bounties <Icon size={18}/></a>
               <a href="#how" className="btn btn-ghost">How it works</a>
             </div>
+            <ol className="mini-steps" aria-label="How a bounty works">
+              <li><span className="mini-ico"><Icon type="target" size={20}/></span>Pick a bounty</li>
+              <li aria-hidden="true" className="mini-arrow"><Icon size={16}/></li>
+              <li><span className="mini-ico"><Icon type="cam" size={20}/></span>Clip it in one take</li>
+              <li aria-hidden="true" className="mini-arrow"><Icon size={16}/></li>
+              <li><span className="mini-ico"><Icon type="cash" size={20}/></span>First clip that passes gets paid</li>
+            </ol>
           </div>
           <HeroDeck onSubmit={openSubmit}/>
         </section>

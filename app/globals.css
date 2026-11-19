@@ -63,6 +63,12 @@ ol,ul{margin:0;padding:0;list-style:none}
 .hero h1{font:clamp(64px,7.4vw,124px)/.9 var(--display);text-transform:uppercase;margin:22px 0}
 .lede{font-size:19px;color:#fff;max-width:500px}
 .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.mini-steps{display:flex;align-items:center;flex-wrap:nowrap;gap:10px;margin-top:26px;font-size:14px;font-weight:700;color:#fff;white-space:nowrap}
+.mini-steps li{display:flex;align-items:center;gap:9px}
+.mini-ico{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex-shrink:0;color:#fff;background:linear-gradient(135deg,#ff2e88,#ff8a2a);box-shadow:0 6px 18px -6px #ff2e88aa,inset 0 0 0 1px #ffffff30}
+.mini-steps li:nth-child(3) .mini-ico{background:linear-gradient(135deg,#ff8a2a,#ffd23f);color:#1a0820}
+.mini-steps li:nth-child(5) .mini-ico{background:linear-gradient(135deg,#1fd6c8,#6be36b);color:#06221c}
+.mini-arrow{color:#ffffff70}
 
 /* scene animation */
 .flash-red{animation:flash 0.9s steps(1) infinite}
@@ -204,6 +210,8 @@ dialog::backdrop{background:#0b0614d9;backdrop-filter:blur(6px)}
 @media(max-width:560px){
   .hero h1{font-size:clamp(56px,16vw,84px)}
   .lede{font-size:16px}
+  .mini-steps{flex-direction:column;align-items:flex-start;white-space:normal;gap:10px}
+  .mini-arrow{display:none!important}
   .hero-actions .btn,.card-actions .btn{flex:1 1 100%}
   .calc{flex-direction:column;align-items:stretch}
   .modal-body{padding:22px 18px 26px}
