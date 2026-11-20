@@ -1,7 +1,7 @@
 'use client';
 import {useEffect, useRef, useState} from 'react';
 import {
-  liveBounties, calculateEligibility, briefLink, briefIdFromHash,
+  liveBounties, upcomingBounties, calculateEligibility, briefLink, briefIdFromHash,
   shareText, xIntent, type Mission,
 } from '@/lib/missions';
 import {Icon, Star} from './art';
@@ -21,14 +21,14 @@ const steps = [
 
 const faq = [
   ['Where does the reward come from?', 'Trading fees fill the bounty pool, and rewards are paid from it. The amount is shown in SOL and paid out in TTWO, since $BOUNTY is paired with it. No team supply. Subject to platform rules and legal review; payouts are not live yet.'],
-  ['When is the next bounty?', 'When the pool fills. Next bounties stay secret until they drop, so nobody gets a head start.'],
+  ['When is the next bounty?', 'When the pool fills. Greyed-out cards preview upcoming challenges. Their final rules and rewards are published when they open; submissions stay closed until then.'],
   ['Can more than one person win?', 'No. Each bounty pays the first clip that passes review. After that it closes.'],
   ['How are clips checked?', 'By hand. We watch every clip against the bounty’s rules and check that the wallet holds 2,500,000+ $BOUNTY. Every status and payout shows on the public submissions board.'],
   ['Is this made by Rockstar?', 'No. BOUNTY is an independent community project with original artwork, not affiliated with Rockstar Games or Take-Two.'],
 ];
 
-type Slide = {kind: 'live'; m: Mission} | {kind: 'locked'; n: number};
-const slides: Slide[] = [...liveBounties.map(m => ({kind: 'live' as const, m})), {kind: 'locked', n: liveBounties.length + 1}, {kind: 'locked', n: liveBounties.length + 2}];
+type Slide = {kind: 'live'; m: Mission} | {kind: 'locked'; preview: typeof upcomingBounties[number]};
+const slides: Slide[] = [...liveBounties.map(m => ({kind: 'live' as const, m})), ...upcomingBounties.slice(0, 2).map(preview => ({kind: 'locked' as const, preview}))];
 
 function HeroDeck({onSubmit}: {onSubmit: (m: Mission) => void}) {
   const rail = useRef<HTMLDivElement>(null);
@@ -71,11 +71,12 @@ function HeroDeck({onSubmit}: {onSubmit: (m: Mission) => void}) {
               </article>
             ) : (
               <article className="deck-card locked">
-                <div className="deck-top"><span className="badge-lock"><Icon type="lock" size={13}/>Bounty #00{s.n}</span></div>
-                <b className="q">???</b>
-                <p className="redact" aria-hidden="true"><i/><i/><i/></p>
-                <div className="deck-reward"><span>Reward</span><b>??? SOL</b></div>
-                <p className="deck-note">Classified. Drops when the pool fills.</p>
+                <div className="deck-top"><span className="badge-lock"><Icon type="lock" size={13}/>Locked · #{s.preview.id}</span></div>
+                <div className="locked-emblem" aria-hidden="true"><Icon type="lock" size={36}/></div>
+                <h3>{s.preview.title}</h3>
+                <p>{s.preview.description}</p>
+                <p className="locked-status"><Icon type="lock" size={14}/>Submissions closed</p>
+                <p className="deck-note">Rules and reward announced when this opens.</p>
               </article>
             )}
           </div>
@@ -239,6 +240,17 @@ export default function Missions() {
               </div>
             </article>
           ))}
+        </section>
+
+        <section className="upcoming" aria-labelledby="upcoming-heading">
+          <div className="upcoming-heading"><h2 id="upcoming-heading">Next bounties.</h2><p>Locked for now. Rules and rewards announced when each opens.</p></div>
+          <div className="upcoming-grid">
+            {upcomingBounties.map(b => <article className="upcoming-card" key={b.id}>
+              <span className="badge-lock"><Icon type="lock" size={13}/>Locked · #{b.id}</span>
+              <h3>{b.title}</h3><p>{b.description}</p>
+              <span className="locked-status"><Icon type="lock" size={14}/>Submissions closed</span>
+            </article>)}
+          </div>
         </section>
 
         <SubmissionsBoard/>

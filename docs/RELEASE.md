@@ -45,3 +45,6 @@ References reviewed: https://21st.dev/community/components (hero/card catalog) a
 
 ## Official X link — November 19, 2026
 Added a compact, accessible X logo button at the far right of the header linking to https://x.com/GTA6Bounties. Existing submission action preserved; compact spacing for mobile.
+
+## Locked upcoming bounty previews — November 19, 2026
+Owner requested revealing upcoming challenges while keeping them closed. Restored four earlier concepts as display-only upcomingBounties: Stick the landing, Not a scratch, One way out, Beat the run. Replaced the mystery slides with named grey previews, added the four-card upcoming section, and corrected the FAQ secrecy copy. No assigned reward amounts or submission controls. Live/API catalog remains exactly 001 and 002. Existing nine tests and TypeScript check passed.

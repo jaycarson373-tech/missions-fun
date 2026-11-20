@@ -21,6 +21,14 @@ export const missions: Mission[] = [
     rules: {vehicle: 'The police car you steal', limit: 'Until the wanted level clears', fail: 'You leave the car, it’s destroyed, or the clip cuts'}},
 ];
 
+// Display-only previews. These do not enable submissions or allocate rewards.
+export const upcomingBounties = [
+  {id: '003', title: 'Stick the landing.', description: 'Land a selected stunt jump and keep the vehicle intact.'},
+  {id: '004', title: 'Not a scratch.', description: 'Finish a city route without a single collision.'},
+  {id: '005', title: 'One way out.', description: 'Lose a pursuit while staying inside a marked district.'},
+  {id: '006', title: 'Beat the run.', description: 'Beat the target time on a fixed route with the same vehicle.'},
+];
+
 export const liveBounties = missions.filter(m => m.status === 'live');
 export const queuedBounties = missions.filter(m => m.status === 'queued');
 

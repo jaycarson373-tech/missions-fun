@@ -366,3 +366,24 @@ dialog::backdrop{background:#0b0614d9;backdrop-filter:blur(6px)}
 .header-x{display:grid;place-items:center;width:40px;height:44px;border:1px solid #d19fea35;border-radius:9px;color:#fff;background:#ffffff04;transition:background .15s,border-color .15s}
 .header-x:hover{background:#ff2e8818;border-color:#ff78af88}
 @media(max-width:560px){.header-actions{gap:6px}.header-actions .btn-sm{padding:0 12px;font-size:11px}.header-x{width:38px}}
+
+/* Upcoming challenges are readable previews, never active submission controls. */
+.deck-card.locked{background:#17151d;border-color:#ffffff1c;box-shadow:0 20px 50px #0004}
+.deck-card.locked::before{background:linear-gradient(140deg,#ffffff33,transparent 60%)}
+.deck-card.locked h3{color:#c7c3cd}
+.deck-card.locked>p{color:#aaa5b3}
+.locked-emblem{color:#77717f;margin:8px 0}
+.locked-status{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9d98a6;margin-top:auto;padding-top:20px}
+.deck-card.locked .deck-note{text-align:left;font-size:12px}
+.upcoming{max-width:1100px;margin:0 auto;padding:0 0 30px}
+.upcoming-heading{margin-bottom:20px}
+.upcoming-heading h2{font:36px/1.1 var(--display);text-transform:uppercase;color:#e1dde7;margin-bottom:10px}
+.upcoming-heading p{font-size:14px;color:#aaa5b3}
+.upcoming-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.upcoming-card{display:flex;flex-direction:column;gap:14px;padding:23px 20px;border:1px solid #ffffff14;border-radius:14px;background:linear-gradient(145deg,#1b1820,#131118);color:#aaa5b3}
+.upcoming-card .badge-lock{align-self:flex-start;color:#aaa5b3;background:#ffffff04}
+.upcoming-card h3{font:29px/1.1 var(--display);text-transform:uppercase;color:#c7c3cd}
+.upcoming-card>p{font-size:13px;line-height:1.7}
+@media(max-width:1220px){.upcoming{margin:0 var(--pad)}}
+@media(max-width:900px){.upcoming-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.upcoming-grid{grid-template-columns:1fr}.upcoming-card{padding:22px}.upcoming-heading h2{font-size:32px}}
