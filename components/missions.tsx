@@ -8,6 +8,7 @@ import {Icon, Star} from './art';
 import WaterfrontScene from './waterfront-scene';
 import {Stars} from './poster';
 import SubmissionsBoard from './submissions-board';
+import BountyPreviewArt from './bounty-preview-art';
 import {tweetTemplate, validateSubmission, type Submission} from '@/lib/submissions';
 
 type Modal = {type: 'submit'; mission: Mission} | {type: 'eligibility'} | null;
@@ -73,7 +74,7 @@ function HeroDeck({onSubmit}: {onSubmit: (m: Mission) => void}) {
             ) : (
               <article className="deck-card locked">
                 <div className="deck-top"><span className="badge-lock"><Icon type="lock" size={13}/>Locked · #{s.preview.id}</span></div>
-                <div className="locked-emblem" aria-hidden="true"><Icon type="lock" size={36}/></div>
+                <BountyPreviewArt kind={s.preview.art}/>
                 <h3>{s.preview.title}</h3>
                 <p>{s.preview.description}</p>
                 <p className="locked-status"><Icon type="lock" size={14}/>Submissions closed</p>
@@ -255,9 +256,11 @@ export default function Missions() {
           <div className="upcoming-heading"><h2 id="upcoming-heading">Next bounties.</h2><p>Locked for now. Rules and rewards announced when each opens.</p></div>
           <div className="upcoming-grid">
             {upcomingBounties.map(b => <article className="upcoming-card" key={b.id}>
-              <span className="badge-lock"><Icon type="lock" size={13}/>Locked · #{b.id}</span>
+              <div className="upcoming-top"><span className="badge-lock"><Icon type="lock" size={13}/>Locked</span><span className="upcoming-id">#{b.id}</span></div>
+              <BountyPreviewArt kind={b.art}/>
+              <span className="upcoming-category">{b.category}</span>
               <h3>{b.title}</h3><p>{b.description}</p>
-              <span className="locked-status"><Icon type="lock" size={14}/>Submissions closed</span>
+              <div className="upcoming-bottom"><span>{b.constraint}</span><span className="locked-status"><Icon type="lock" size={14}/>Submissions closed</span></div>
             </article>)}
           </div>
         </section>

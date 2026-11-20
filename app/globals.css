@@ -395,3 +395,17 @@ dialog::backdrop{background:#0b0614d9;backdrop-filter:blur(6px)}
 @media(max-width:1150px){.top nav{gap:15px;font-size:12px}.top{gap:12px}}
 @media(max-width:1000px){.top nav{display:none}}
 @media(max-width:560px){.top{display:grid;grid-template-columns:1fr auto;gap:8px 10px;padding-top:10px;padding-bottom:8px}.top .brand{grid-column:1;grid-row:1}.header-actions{grid-column:2;grid-row:1}.contract-chip{grid-column:1/-1;grid-row:2;justify-self:end;min-height:30px;padding:0 10px;gap:8px}.contract-value{font-size:11px}}
+
+/* Closed briefs: distinct route artwork, readable muted treatment. */
+.upcoming-card{gap:12px;overflow:hidden}
+.upcoming-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.upcoming-id{font-size:12px;font-variant-numeric:tabular-nums;letter-spacing:.1em;color:#8e8998}
+.bounty-preview-art{width:100%;height:auto;display:block;color:#b4aebe;flex-shrink:0}
+.upcoming-card .bounty-preview-art{margin:0 -20px;width:calc(100% + 40px);border-block:1px solid #ffffff09}
+.upcoming-category{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#9892a3;margin-top:4px}
+.upcoming-card h3{font-size:30px;color:#ded9e4;text-wrap:balance}
+.upcoming-card>p{color:#b2acbc;line-height:1.65}
+.upcoming-bottom{margin-top:auto;padding-top:18px;font-size:11px;font-weight:600;color:#c2bccb}
+.upcoming-bottom .locked-status{border-top:1px solid #ffffff12;margin-top:15px;padding-top:13px;font-size:10px;color:#9992a5}
+.deck-card.locked .bounty-preview-art{max-height:100px;margin:-4px 0}
+@media(max-width:560px){.upcoming-card .bounty-preview-art{margin-inline:-22px;width:calc(100% + 44px);max-height:130px}.upcoming-card{gap:12px}}

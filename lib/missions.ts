@@ -23,10 +23,14 @@ export const missions: Mission[] = [
 
 // Display-only previews. These do not enable submissions or allocate rewards.
 export const upcomingBounties = [
-  {id: '003', title: 'Stick the landing.', description: 'Land a selected stunt jump and keep the vehicle intact.'},
-  {id: '004', title: 'Not a scratch.', description: 'Finish a city route without a single collision.'},
-  {id: '005', title: 'One way out.', description: 'Lose a pursuit while staying inside a marked district.'},
-  {id: '006', title: 'Beat the run.', description: 'Beat the target time on a fixed route with the same vehicle.'},
+  {id: '003', title: 'Clear the gap.', category: 'Stunt jump', art: 'jump', constraint: 'Land it. Drive away.',
+    description: 'Take the marked jump, land on all four wheels and drive out in the same car. A wreck on the landing doesn’t count.'},
+  {id: '004', title: 'Not a scratch.', category: 'Precision driving', art: 'route', constraint: 'One route. Zero contact.',
+    description: 'Cross the city on the posted route without touching another car, barrier or pedestrian. One collision ends the run.'},
+  {id: '005', title: 'Nowhere to run.', category: 'Police escape', art: 'zone', constraint: 'Lose the cops. Stay inside.',
+    description: 'Clear your wanted level without leaving the marked district. Keep the minimap in frame so every turn can be checked.'},
+  {id: '006', title: 'Beat the clock.', category: 'Time trial', art: 'timer', constraint: 'Same car. Same course.',
+    description: 'Take the specified car through every checkpoint before the target time. No shortcuts, vehicle swaps or mid-run restarts.'},
 ];
 
 export const liveBounties = missions.filter(m => m.status === 'live');

@@ -51,3 +51,7 @@ Owner requested revealing upcoming challenges while keeping them closed. Restore
 
 ## BOUNTY contract chip — November 19, 2026
 Owner-supplied mint Av4ekt3sscDM7jH7cjaPFdWp6rnKeEhvTGtipYc3pump displayed in a compact top-right copy button. Full exact value copied with success feedback, manual-copy fallback on clipboard failure. Mobile chip sits on a compact second header row to preserve submission and X buttons. Display-only configuration; no holdings checks or financial execution changed.
+
+## Upcoming bounty refinement — November 19, 2026
+Refined four closed previews: Clear the gap, Not a scratch, Nowhere to run, Beat the clock. Each has a distinct objective, constraint and original monochrome SVG diagram (jump, collision-free route, district escape, time trial). Grey presentation and closed submissions retained; no rewards allocated or rules added to the live/API catalog. Hero preview cards reuse the same artwork and copy. Existing CA copy button keeps its address visible and confirms only in the bottom toast.
+Checks: 9 existing tests pass, production build/typecheck pass. Original SVGs inspected in the four-column desktop grid and single-column 390px mobile layout; no mobile horizontal overflow. Only bounties 001/002 remain accepted by the submission validator.
