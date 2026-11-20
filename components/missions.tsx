@@ -12,6 +12,7 @@ import {tweetTemplate, validateSubmission, type Submission} from '@/lib/submissi
 
 type Modal = {type: 'submit'; mission: Mission} | {type: 'eligibility'} | null;
 const live = liveBounties[0];
+const BOUNTY_CA = 'Av4ekt3sscDM7jH7cjaPFdWp6rnKeEhvTGtipYc3pump';
 
 const steps = [
   {icon: 'wallet', t: 'Hold 2.5M+', b: 'Keep at least 2,500,000 $BOUNTY in your Solana wallet.'},
@@ -145,6 +146,11 @@ export default function Missions() {
     return () => clearTimeout(t);
   }, [notice]);
 
+  async function copyContract() {
+    try { await navigator.clipboard.writeText(BOUNTY_CA); setNotice('Contract address copied.'); }
+    catch { setNotice(`Copy CA: ${BOUNTY_CA}`); }
+  }
+
   async function copyLink(m: Mission) {
     const url = briefLink(location.origin, m.id);
     try { await navigator.clipboard.writeText(url); setNotice('Bounty link copied.'); }
@@ -185,6 +191,9 @@ export default function Missions() {
       <header className="top">
         <a href="#" className="brand" aria-label="Bounty home"><img src="/brand/bounty-logo.webp" width="40" height="40" alt=""/><span>Bounty</span></a>
         <nav aria-label="Main navigation"><a href="#bounty">Bounties</a><a href="#submissions">Submissions</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
+        <button className="contract-chip" onClick={copyContract} aria-label="Copy BOUNTY contract address" title={BOUNTY_CA}>
+          <span className="contract-label">CA</span><span className="contract-value">{notice === 'Contract address copied.' ? 'Copied' : 'Av4ekt…3pump'}</span><Icon type={notice === 'Contract address copied.' ? 'check' : 'copy'} size={14}/>
+        </button>
         <div className="header-actions">
           <button className="btn btn-pink btn-sm" onClick={() => openSubmit()}>Submit a clip</button>
           <a className="header-x" href="https://x.com/GTA6Bounties" target="_blank" rel="noopener noreferrer" aria-label="BOUNTY on X" title="@GTA6Bounties"><Icon type="xlogo" size={18}/></a>

@@ -387,3 +387,11 @@ dialog::backdrop{background:#0b0614d9;backdrop-filter:blur(6px)}
 @media(max-width:1220px){.upcoming{margin:0 var(--pad)}}
 @media(max-width:900px){.upcoming-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.upcoming-grid{grid-template-columns:1fr}.upcoming-card{padding:22px}.upcoming-heading h2{font-size:32px}}
+
+.contract-chip{display:flex;align-items:center;justify-content:center;gap:9px;flex-shrink:0;min-height:40px;padding:0 12px;border-radius:9px;border:1px solid #e3a9d93b;background:#ffffff04;color:#e9d9e8;transition:border-color .15s,background .15s}
+.contract-chip:hover{border-color:#ff78af88;background:#ff2e8810}
+.contract-label{font-size:10px;font-weight:800;letter-spacing:.12em;color:#e8a7cb}
+.contract-value{font:12px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace}
+@media(max-width:1150px){.top nav{gap:15px;font-size:12px}.top{gap:12px}}
+@media(max-width:1000px){.top nav{display:none}}
+@media(max-width:560px){.top{display:grid;grid-template-columns:1fr auto;gap:8px 10px;padding-top:10px;padding-bottom:8px}.top .brand{grid-column:1;grid-row:1}.header-actions{grid-column:2;grid-row:1}.contract-chip{grid-column:1/-1;grid-row:2;justify-self:end;min-height:30px;padding:0 10px;gap:8px}.contract-value{font-size:11px}}

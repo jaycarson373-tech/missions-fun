@@ -48,3 +48,6 @@ Added a compact, accessible X logo button at the far right of the header linking
 
 ## Locked upcoming bounty previews — November 19, 2026
 Owner requested revealing upcoming challenges while keeping them closed. Restored four earlier concepts as display-only upcomingBounties: Stick the landing, Not a scratch, One way out, Beat the run. Replaced the mystery slides with named grey previews, added the four-card upcoming section, and corrected the FAQ secrecy copy. No assigned reward amounts or submission controls. Live/API catalog remains exactly 001 and 002. Existing nine tests and TypeScript check passed.
+
+## BOUNTY contract chip — November 19, 2026
+Owner-supplied mint Av4ekt3sscDM7jH7cjaPFdWp6rnKeEhvTGtipYc3pump displayed in a compact top-right copy button. Full exact value copied with success feedback, manual-copy fallback on clipboard failure. Mobile chip sits on a compact second header row to preserve submission and X buttons. Display-only configuration; no holdings checks or financial execution changed.
