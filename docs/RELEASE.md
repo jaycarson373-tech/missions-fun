@@ -28,3 +28,7 @@ Verification: four existing tests pass; production build/typecheck pass. Desktop
 ## Production admin/database — November 19, 2026
 
 Revision 372c4a3 retains collaborator design and manual-review settings. Nine tests and production build pass. Dedicated free Upstash Redis resource bounty-submissions (store_opjrbUyStzBetXSP), production environment only, iad1; requested eviction=false, autoUpgrade=false, prodPack=false. Existing owner password preserved via server-only hash. No credential values recorded. Authentication no longer accepts database credentials; proof deduplication and row/index write are atomic. No AI review, automatic wallet eligibility or payout execution added.
+
+## Owner-supplied BOUNTY logo — November 19, 2026
+
+Installed the supplied VI/BOUNTY artwork in the header and footer, with optimized WebP and matching PNG favicon/Apple icon. Versioned asset URLs avoid old favicon caches. Original artwork preserved; no new generated artwork or layout changes. Manual review and storage unchanged. Owner requested a replacement admin password in the prior release; production credential was rotated and authenticated access verified, superseding older notes about retaining the original password.

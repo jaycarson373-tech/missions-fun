@@ -181,7 +181,7 @@ export default function Missions() {
       <a className="skip" href="#main">Skip to content</a>
 
       <header className="top">
-        <a href="#" className="brand" aria-label="Bounty home"><img src="/logo.jpg" width="40" height="40" alt=""/><span>Bounty</span></a>
+        <a href="#" className="brand" aria-label="Bounty home"><img src="/brand/bounty-logo.webp" width="40" height="40" alt=""/><span>Bounty</span></a>
         <nav aria-label="Main navigation"><a href="#bounty">Bounties</a><a href="#submissions">Submissions</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
         <button className="btn btn-pink btn-sm" onClick={() => openSubmit()}>Submit a clip</button>
       </header>
@@ -262,7 +262,7 @@ export default function Missions() {
       </main>
 
       <footer>
-        <span className="brand"><img src="/logo.jpg" alt="" width="28" height="28"/><span>Bounty</span></span>
+        <span className="brand"><img src="/brand/bounty-logo.webp" alt="" width="28" height="28"/><span>Bounty</span></span>
         <p>Independent GTA VI community project. Not affiliated with Rockstar Games or Take-Two.</p>
       </footer>
 
