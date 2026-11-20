@@ -249,6 +249,53 @@ dialog::backdrop{background:#0b0614d9;backdrop-filter:blur(6px)}
 .calc label{flex:1;margin:16px 0 0}
 .estimate{margin-top:16px;padding:14px 16px;border-radius:14px;background:#6be36b18;border:1px solid #6be36b88;font-size:14px}
 
+/* BOUNTY waterfront art direction: original environment, restrained chrome. */
+.top{background:#10081be8;border-bottom-color:#ce80ff24}
+.brand img{width:48px;height:48px;border-radius:9px;box-shadow:0 0 24px #b82afd20}
+.hero{min-height:800px;grid-template-columns:minmax(0,1fr) minmax(300px,370px);align-items:start;padding-top:48px;padding-bottom:180px;gap:5vw}
+.waterfront-scene{position:absolute;inset:0;z-index:-2;overflow:hidden;pointer-events:none;background:#170820}
+.waterfront-scene picture,.waterfront-scene img{display:block;width:100%;height:100%}
+.waterfront-scene img{object-fit:cover;object-position:center 65%}
+.waterfront-light{position:absolute;inset:0;background:radial-gradient(ellipse at 72% 82%,#ff469b16,transparent 48%);animation:waterfront-breathe 12s ease-in-out infinite}
+@keyframes waterfront-breathe{50%{opacity:.3}}
+.hero::after{background:linear-gradient(90deg,#0b0614eb 0%,#0b0614b0 24%,#0b061422 59%,#0b061411),linear-gradient(0deg,var(--bg) 0%,transparent 23%)}
+.hero-copy{position:relative;max-width:650px}
+.hero h1{font-size:clamp(72px,7.6vw,112px);line-height:.97;letter-spacing:-.015em;text-shadow:0 4px 0 #180b22,0 12px 36px #0007}
+.hero h1 .vice-text{background:linear-gradient(180deg,#fff7ec 5%,#f3caff 35%,#ff8fbd 65%,#ff5669 100%);background-clip:text;-webkit-background-clip:text;filter:drop-shadow(0 2px 0 #49203c);text-shadow:none}
+.lede{font-size:18px;line-height:1.7;color:#f2e9f4;max-width:495px;text-shadow:0 2px 12px #000}
+.pill{border:1px solid #e9b6ff2a;background:#14091ac9;font-size:11px;letter-spacing:.12em}
+.btn{border-radius:10px;font-size:13px;letter-spacing:.07em;min-height:50px}
+.btn-pink{background:#f42c83;box-shadow:inset 0 1px 0 #ffffff33,0 8px 28px #e8247333}
+.btn-pink:hover{background:#ff4595;box-shadow:inset 0 1px 0 #ffffff55,0 8px 32px #e8247355}
+.btn-sm{min-height:40px}
+.mini-steps{font-size:11px;gap:8px;color:#ded1e4;white-space:normal}
+.mini-ico,.mini-steps li:nth-child(3) .mini-ico,.mini-steps li:nth-child(5) .mini-ico{width:28px;height:28px;border-radius:7px;background:#1c1028b3;color:#efb2dd;border:1px solid #ffaad32b;box-shadow:none}
+.hero .deck{margin-top:16px}
+.deck-card{min-height:400px;border-radius:16px;background:linear-gradient(145deg,#1c102af5,#110b1df0);border:1px solid #d19fea45;box-shadow:0 24px 60px #08030c70;backdrop-filter:none;-webkit-backdrop-filter:none}
+.deck-card::before{padding:1px;background:linear-gradient(140deg,#f5d7ff99,transparent 35%,#ff3b9255);animation:none}
+.deck-card::after{display:none}
+.deck-card h3{font-size:44px;line-height:1.03}
+.deck-card>p{line-height:1.65;color:#d4c6db}
+.deck-reward{border-radius:9px;background:#f0b8ff08;border-color:#d7b3e524}
+.deck-reward b{background:linear-gradient(#fff1dd,#ffb977);background-clip:text;-webkit-background-clip:text}
+.badge-live,.badge-lock{font-size:10px;border-radius:5px}
+.deck-nav{justify-content:flex-end}
+.deck-nav>button{background:#160a21c9}
+.wanted-row .star.on path{animation:none;fill:#fff4df}
+.q{animation:none}
+.live-dot{animation:none;box-shadow:0 0 8px #6be36b66}
+.bounty{margin-top:-100px}
+.card{border-radius:18px;border-color:#d19fea29;background:#160d20}
+.card-reward{position:relative;isolation:isolate;background:#241031;overflow:hidden}
+.card-reward::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#17091bd9,#17091b80),url('/art/bounty-waterfront.webp') 75% 65%/cover;opacity:.8}
+.card:nth-child(2) .card-reward{background:#14102d}
+.card:nth-child(2) .card-reward::before{background-position:95% 45%;filter:hue-rotate(20deg)}
+.card-body h2{line-height:1.03}
+.amount{text-shadow:0 3px 0 #421a45,0 8px 22px #0008}
+.rules li{border-radius:7px;background:#ffffff05;border:1px solid #ffffff07}
+.steps article{border-color:#d19fea29}
+@media(min-width:1600px){.hero{min-height:860px}.waterfront-scene img{object-position:center 70%}}
+
 /* responsive */
 @media(max-width:900px){
   .top nav{display:none}
@@ -282,4 +329,35 @@ dialog::backdrop{background:#0b0614d9;backdrop-filter:blur(6px)}
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
+}
+
+/* Deliberate mobile composition: copy, full-width environment, then bounty deck. */
+@media(max-width:900px){
+ .hero{padding:0 0 32px;min-height:0;gap:0}
+ .hero-copy{order:0;padding:38px var(--pad) 18px}
+ .hero h1{font-size:clamp(66px,11vw,94px);line-height:.98;max-width:680px}
+ .waterfront-scene{position:relative;inset:auto;order:1;z-index:0;width:100%;height:340px;margin-top:-8px;mask-image:linear-gradient(transparent,#000 12%,#000 84%,transparent)}
+ .waterfront-scene img{object-position:68% 62%}
+ .hero .deck{order:2;max-width:640px;align-self:center;width:100%;margin-top:-28px;z-index:1}
+ .deck-card{min-height:385px}
+ .bounty{margin-top:0}
+ .lede{max-width:620px}
+ .mini-steps{flex-direction:row;flex-wrap:wrap;font-size:11px;gap:12px}
+ .mini-arrow{display:none!important}
+ .hero-actions{margin-top:23px}
+ .deck-nav{justify-content:center}
+}
+@media(max-width:560px){
+ .brand img{width:42px;height:42px}
+ .top{gap:10px}
+ .hero h1{font-size:clamp(58px,17vw,84px);margin:20px 0}
+ .lede{font-size:16px;line-height:1.65}
+ .pill{font-size:9px;letter-spacing:.08em;padding:8px 10px}
+ .hero-actions .btn{flex:1 1 auto;padding:0 15px;font-size:11px}
+ .waterfront-scene{height:270px;margin-top:0}
+ .mini-steps{gap:10px;font-size:10px;margin-top:22px}
+ .mini-ico,.mini-steps li:nth-child(3) .mini-ico,.mini-steps li:nth-child(5) .mini-ico{width:24px;height:24px}
+ .mini-steps li{gap:5px}
+ .deck-card h3{font-size:42px}
+ .card-reward{min-height:260px}
 }

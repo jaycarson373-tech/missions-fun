@@ -32,3 +32,13 @@ Revision 372c4a3 retains collaborator design and manual-review settings. Nine te
 ## Owner-supplied BOUNTY logo — November 19, 2026
 
 Installed the supplied VI/BOUNTY artwork in the header and footer, with optimized WebP and matching PNG favicon/Apple icon. Versioned asset URLs avoid old favicon caches. Original artwork preserved; no new generated artwork or layout changes. Manual review and storage unchanged. Owner requested a replacement admin password in the prior release; production credential was rotated and authenticated access verified, superseding older notes about retaining the original password.
+
+## Cinematic waterfront visual upgrade — November 19, 2026
+
+Owner reference: supplied VI BOUNTY sunset banner, used for art direction only; the banner itself is not installed. Original built-in image-generation scenery is saved as `public/art/bounty-waterfront.webp`, with a separate responsive mobile asset. Logo remains the supplied owner artwork.
+
+Generation prompt: original wide cinematic Miami waterfront at magenta sunset, detailed black 1970s muscle car rear three-quarter, wet asphalt and water reflections, illuminated coastal skyline, palms at far edges and a small helicopter/searchlight. Deep plum quiet left side for text, car lower middle-right, violet clouds and peach horizon. No text, logo, UI, Rockstar marks, coin imagery, particles or giant sun disk. Generated with the built-in image tool, then encoded to WebP.
+
+Replaced flat SVG hero scene with responsive environment art; refined pink/silver title, buttons, borders and reward-panel scenery. Removed flashing stars, spinning rainbow borders and glitch effects from displayed components. Retained reduced-motion support, existing carousel, copy, challenge records, fee/eligibility rules, manual reviews and all API/auth code.
+
+References reviewed: https://21st.dev/community/components (hero/card catalog) and https://reactbits.dev/components/spotlight-card (edge-light approach). Original CSS implementation; no third-party component code or dependencies imported. Visual inspection at 390, 768 and 1440px; mobile submission dialog opened/closed successfully; no horizontal overflow at 390/768px. Production build/typecheck passed.

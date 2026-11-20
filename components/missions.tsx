@@ -4,7 +4,8 @@ import {
   liveBounties, calculateEligibility, briefLink, briefIdFromHash,
   shareText, xIntent, type Mission,
 } from '@/lib/missions';
-import {Icon, Scene, Star} from './art';
+import {Icon, Star} from './art';
+import WaterfrontScene from './waterfront-scene';
 import {Stars} from './poster';
 import SubmissionsBoard from './submissions-board';
 import {tweetTemplate, validateSubmission, type Submission} from '@/lib/submissions';
@@ -188,7 +189,7 @@ export default function Missions() {
 
       <main id="main">
         <section className="hero">
-          <Scene className="hero-scene"/>
+          <WaterfrontScene/>
           <div className="hero-copy">
             <p className="pill"><span className="live-dot"/>{liveBounties.length} bounties live · {liveBounties.reduce((t, m) => t + parseFloat(m.reward), 0)} SOL up for grabs</p>
             <h1>Pull it off.<br/>Clip it.<br/><span className="vice-text">Get paid.</span></h1>
