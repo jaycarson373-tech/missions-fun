@@ -192,7 +192,7 @@ export default function Missions() {
         <a href="#" className="brand" aria-label="Bounty home"><img src="/brand/bounty-logo.webp" width="40" height="40" alt=""/><span>Bounty</span></a>
         <nav aria-label="Main navigation"><a href="#bounty">Bounties</a><a href="#submissions">Submissions</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
         <button className="contract-chip" onClick={copyContract} aria-label="Copy BOUNTY contract address" title={BOUNTY_CA}>
-          <span className="contract-label">CA</span><span className="contract-value">{notice === 'Contract address copied.' ? 'Copied' : 'Av4ekt…3pump'}</span><Icon type={notice === 'Contract address copied.' ? 'check' : 'copy'} size={14}/>
+          <span className="contract-label">CA</span><span className="contract-value">Av4ekt…3pump</span><Icon type="copy" size={14}/>
         </button>
         <div className="header-actions">
           <button className="btn btn-pink btn-sm" onClick={() => openSubmit()}>Submit a clip</button>
