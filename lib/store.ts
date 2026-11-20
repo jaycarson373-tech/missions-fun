@@ -1,4 +1,4 @@
-import type {Submission} from './submissions';
+import type {Submission} from './submissions.ts';
 
 // Upstash Redis over REST (Vercel Marketplace sets KV_REST_API_URL / KV_REST_API_TOKEN).
 // Without it, development uses an in-memory store and production reports submissions closed.
@@ -9,7 +9,7 @@ const memory = (globalThis as unknown as {__bountyMem?: Map<string, unknown>})._
 export function storeReady() { return Boolean(URL_ && TOKEN) || process.env.NODE_ENV !== 'production'; }
 
 async function redis(cmd: (string | number)[]): Promise<unknown> {
-  const r = await fetch(URL_, {method: 'POST', headers: {Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json'}, body: JSON.stringify(cmd), cache: 'no-store'});
+  const r = await fetch(URL_, {method: 'POST', headers: {Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json'}, body: JSON.stringify(cmd), cache: 'no-store',signal:AbortSignal.timeout(8000)});
   const j = await r.json() as {result?: unknown; error?: string};
   if (!r.ok || j.error) throw new Error('store_error');
   return j.result;
@@ -24,8 +24,7 @@ export async function rateLimit(key: string, max: number, windowSec: number) {
     return cur.n <= max;
   }
   const k = `rl:${key}`;
-  const n = Number(await redis(['INCR', k]));
-  if (n === 1) await redis(['EXPIRE', k, windowSec]);
+  const n = Number(await redis(['EVAL',"local n=redis.call('INCR',KEYS[1]); if n==1 then redis.call('EXPIRE',KEYS[1],ARGV[1]) end return n",1,k,windowSec]));
   return n <= max;
 }
 
@@ -62,4 +61,11 @@ export async function listSubmissions(limit = 200): Promise<Submission[]> {
   if (!ids?.length) return [];
   const vals = await redis(['MGET', ...ids.map(id => `bounty:sub:${id}`)]) as (string | null)[];
   return vals.filter((v): v is string => typeof v === 'string').map(v => JSON.parse(v) as Submission);
+}
+
+// Claim proof and save its row/index in one operation; a failed write cannot strand a tweet.
+export async function createSubmission(s:Submission){
+ if(!useRedis()){if(!await claimTweet(s.tweetUrl))return false;await saveSubmission(s,true);return true;}
+ const script="if redis.call('SISMEMBER',KEYS[1],ARGV[1]) == 1 then return 0 end redis.call('SET',KEYS[2],ARGV[2]); redis.call('LPUSH',KEYS[3],ARGV[3]); redis.call('SADD',KEYS[1],ARGV[1]); return 1";
+ return Number(await redis(['EVAL',script,3,'bounty:tweets',`bounty:sub:${s.id}`,'bounty:subs',s.tweetUrl,JSON.stringify(s),s.id]))===1;
 }

@@ -10,8 +10,12 @@ No remote publishing, wallet verification, AI review or payouts are active. All 
 
 Run: `npm ci`, `npm run dev`. Check: `npm test`, `npm run build`.
 
-## Submissions setup (Vercel)
+## Admin and storage (Vercel)
 
-One step: Vercel → this project → **Storage** → **Create Database** → **Upstash for Redis** (free) → **Connect** to this project, then redeploy. That sets `KV_REST_API_URL` and `KV_REST_API_TOKEN`; submissions open automatically.
+Review submissions at `/admin`. Sign in with the existing owner password. Its hash is configured in server-only `ADMIN_PASSWORD_SHA256`; the password is no longer embedded in source or saved in browser storage. A dedicated `ADMIN_TOKEN` can be configured instead. Database credentials are never accepted as admin passwords.
 
-Review at `/admin` with the owner's admin password (only its SHA-256 hash is in the code). An `ADMIN_TOKEN` env var also works if you set one. Set each entry to Pending review / Approved / Rejected / Paid, add a public note, and paste the payout transaction signature when marking Paid.
+Connect a dedicated Upstash Redis database to this Vercel project’s production environment. Supported variables: `KV_REST_API_URL` / `KV_REST_API_TOKEN` or `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`. Do not make these NEXT_PUBLIC variables. Use the free tier, eviction off and automatic paid upgrades off. Redeploy after connecting.
+
+`GET /api/submissions` reports whether storage is configured and loads the public board. `GET /api/admin` checks the password and database; `PATCH /api/submissions/:id` saves manual decisions. New submissions atomically claim their tweet and persist the row/index. Sign-out clears the in-memory admin credential.
+
+Review is manual. Setting a payout transaction link records an operator-reported payment; this app does not send funds or verify token holdings, clip content or payment receipts automatically. No token mint has been supplied to this repository.

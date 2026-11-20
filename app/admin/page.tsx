@@ -1,5 +1,5 @@
 'use client';
-import {useCallback, useEffect, useState} from 'react';
+import {useState} from 'react';
 import {STATUSES, statusLabel, shortWallet, type Status, type Submission} from '@/lib/submissions';
 
 // Private review page. Uses the owner's admin password; it stays in this browser tab.
@@ -7,35 +7,39 @@ export default function Admin() {
   const [token, setToken] = useState('');
   const [subs, setSubs] = useState<Submission[]>([]);
   const [msg, setMsg] = useState('');
+  const [loggedIn,setLoggedIn]=useState(false),[busy,setBusy]=useState(false);
   const [edit, setEdit] = useState<Record<string, {status: Status; reviewNote: string; payoutTx: string}>>({});
 
-  useEffect(() => { try { setToken(sessionStorage.getItem('bounty:admin') || ''); } catch {} }, []);
-  const load = useCallback(async () => {
-    const r = await fetch('/api/submissions', {cache: 'no-store'});
-    const j = await r.json() as {submissions?: Submission[]};
-    const list = j.submissions ?? [];
-    setSubs(list);
-    setEdit(Object.fromEntries(list.map(s => [s.id, {status: s.status, reviewNote: s.reviewNote, payoutTx: s.payoutTx ?? ''}])));
-  }, []);
-  useEffect(() => { load(); }, [load]);
+  async function load(){
+    setBusy(true);setMsg('');
+    try{
+    const r=await fetch('/api/admin',{cache:'no-store',headers:{Authorization:`Bearer ${token}`}});
+    const j=await r.json();
+    if(!r.ok){setMsg(j.error||'Could not sign in.');setLoggedIn(false);return;}
+    const list:Submission[]=j.submissions??[];
+    setSubs(list);setLoggedIn(true);
+    setEdit(Object.fromEntries(list.map(s=>[s.id,{status:s.status,reviewNote:s.reviewNote,payoutTx:s.payoutTx??''}])));
+    }catch{setMsg('Connection failed. Try again.');}finally{setBusy(false);}
+  }
 
   async function save(id: string) {
     setMsg('');
     const e = edit[id];
+    try {
     const r = await fetch(`/api/submissions/${id}`, {method: 'PATCH', headers: {'Content-Type': 'application/json', Authorization: `Bearer ${token}`}, body: JSON.stringify(e)});
     const j = await r.json() as {error?: string};
     if (!r.ok) { setMsg(j.error || 'Save failed.'); return; }
-    try { sessionStorage.setItem('bounty:admin', token); } catch {}
     setMsg('Saved.');
-    load();
+    await load();setMsg('Review saved.');
+    }catch{setMsg('Could not save. Check your connection and retry.');}
   }
 
   return (
     <main className="admin">
       <h1>Review submissions</h1>
-      <label>Admin password<input type="password" value={token} onChange={e => setToken(e.target.value)} autoComplete="off" placeholder="Admin password"/></label>
+      {!loggedIn?<form onSubmit={e=>{e.preventDefault();load()}}><label>Admin password<input type="password" value={token} onChange={e => setToken(e.target.value)} autoComplete="off" placeholder="Admin password" required/></label><button disabled={busy} type="submit">{busy?"Connecting…":"Sign in"}</button></form>:<div><p>Storage connected · Manual review</p><button onClick={()=>load()} disabled={busy}>Refresh</button><button onClick={()=>{setToken('');setLoggedIn(false);setSubs([]);setMsg('')}}>Sign out</button></div>}
       {msg && <p className="admin-msg" role="status">{msg}</p>}
-      <p className="admin-count">{subs.length} submissions · {subs.filter(s => s.status === 'pending').length} pending</p>
+      {loggedIn&&<><p className="admin-count">{subs.length} submissions · {subs.filter(s => s.status === 'pending').length} pending</p>
       <ul>
         {subs.map(s => (
           <li key={s.id}>
@@ -57,7 +61,7 @@ export default function Admin() {
             </div>
           </li>
         ))}
-      </ul>
+      </ul>{!subs.length&&<p>No submissions yet. New entries will appear here.</p>}</>}
     </main>
   );
 }
