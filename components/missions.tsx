@@ -184,7 +184,10 @@ export default function Missions() {
       <header className="top">
         <a href="#" className="brand" aria-label="Bounty home"><img src="/brand/bounty-logo.webp" width="40" height="40" alt=""/><span>Bounty</span></a>
         <nav aria-label="Main navigation"><a href="#bounty">Bounties</a><a href="#submissions">Submissions</a><a href="#how">How it works</a><a href="#faq">FAQ</a></nav>
-        <button className="btn btn-pink btn-sm" onClick={() => openSubmit()}>Submit a clip</button>
+        <div className="header-actions">
+          <button className="btn btn-pink btn-sm" onClick={() => openSubmit()}>Submit a clip</button>
+          <a className="header-x" href="https://x.com/GTA6Bounties" target="_blank" rel="noopener noreferrer" aria-label="BOUNTY on X" title="@GTA6Bounties"><Icon type="xlogo" size={18}/></a>
+        </div>
       </header>
 
       <main id="main">

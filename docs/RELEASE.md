@@ -42,3 +42,6 @@ Generation prompt: original wide cinematic Miami waterfront at magenta sunset, d
 Replaced flat SVG hero scene with responsive environment art; refined pink/silver title, buttons, borders and reward-panel scenery. Removed flashing stars, spinning rainbow borders and glitch effects from displayed components. Retained reduced-motion support, existing carousel, copy, challenge records, fee/eligibility rules, manual reviews and all API/auth code.
 
 References reviewed: https://21st.dev/community/components (hero/card catalog) and https://reactbits.dev/components/spotlight-card (edge-light approach). Original CSS implementation; no third-party component code or dependencies imported. Visual inspection at 390, 768 and 1440px; mobile submission dialog opened/closed successfully; no horizontal overflow at 390/768px. Production build/typecheck passed.
+
+## Official X link — November 19, 2026
+Added a compact, accessible X logo button at the far right of the header linking to https://x.com/GTA6Bounties. Existing submission action preserved; compact spacing for mobile.
