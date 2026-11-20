@@ -2,7 +2,7 @@
 
 Latest collaborator main retained: existing GTA visuals, two configured bounty briefs, manual review and exact 2.5M eligibility copy. Server-only password hash moved to Vercel production without changing the owner’s password. Added authenticated admin loading, login/logout, storage errors, auth rate limit and origin checks. Database credentials no longer authorize reviews. Submission row, tweet uniqueness and list index now persist in a single Redis operation; rate-limit expiry is atomic.
 
-Vercel Upstash provisioning requested as `bounty-submissions`, production only, iad1, eviction off, auto-upgrade off. Marketplace terms require owner confirmation before completion. No credentials copied from another project. No production test submissions inserted.
+Vercel Upstash provisioning requested as `bounty-submissions`, production only, iad1, eviction off, auto-upgrade off. Marketplace terms accepted and dedicated free-tier database provisioned/connected on November 19. Resource `store_opjrbUyStzBetXSP`. No credentials copied from another project. No production test submissions inserted.
 
 Current boundaries: manual review only; no AI verification, wallet-ownership/holding verification, automatic payment, token mint or new financial policy. Operator-entered payout links are not independently verified receipts. Preserve these distinctions.
 

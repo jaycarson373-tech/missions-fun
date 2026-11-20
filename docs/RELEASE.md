@@ -24,3 +24,7 @@ Application revision: `70383ce`. Private GitHub repo: https://github.com/jaycars
 Focused reuse of the existing frontend: new B mark/favicon/social card, player-created gameplay challenge catalog, AI-assisted clip-review copy and creator draft form with local recovery/download. Existing 2.5M threshold and proof safeguards retained. No new libraries or paid media generation. Updated backend handoff describes bounded AI review, uncertain-result escalation and non-wagered funding.
 
 Verification: four existing tests pass; production build/typecheck pass. Desktop browser checked; creator draft survived reload and exported with explicit unpublished status. No browser console errors observed. Remote publishing, AI review and rewards remain inactive.
+
+## Production admin/database — November 19, 2026
+
+Revision 372c4a3 retains collaborator design and manual-review settings. Nine tests and production build pass. Dedicated free Upstash Redis resource bounty-submissions (store_opjrbUyStzBetXSP), production environment only, iad1; requested eviction=false, autoUpgrade=false, prodPack=false. Existing owner password preserved via server-only hash. No credential values recorded. Authentication no longer accepts database credentials; proof deduplication and row/index write are atomic. No AI review, automatic wallet eligibility or payout execution added.
